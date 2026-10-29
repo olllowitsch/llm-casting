@@ -34,3 +34,6 @@ secrets.*
 .idea/
 *~
 .DS_Store
+
+# Generated offline HTML reports
+/reports/

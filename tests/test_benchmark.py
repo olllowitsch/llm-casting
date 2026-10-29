@@ -281,5 +281,132 @@ class BenchmarkTests(unittest.TestCase):
             self.assertEqual(b.main(['scenarios/smoke.json', '--output', '/tmp/outside', '--dry-run']), 2)
 
 
+class ResumeTests(unittest.TestCase):
+    scenario = BenchmarkTests.scenario
+    def interrupt(self, directory):
+        client = FakeClient()
+        request = client.request
+        def interrupted(endpoint, body=None):
+            if endpoint == '/api/generate' and client.generations == 1:
+                raise KeyboardInterrupt()
+            return request(endpoint, body)
+        client.request = interrupted
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(KeyboardInterrupt):
+            b.run(self.scenario(), client, directory)
+
+    def test_resume_preserves_success_and_reconstructs_progress(self):
+        with tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+            d = Path(tmp)
+            self.interrupt(d)
+            first = (d/'run_00001.json').read_bytes()
+            # Simulate a stale checkpoint after an atomic measurement commit.
+            manifest = b.read_json(d/'manifest.json')
+            manifest.update(completed_indices=[], completed_runs=0)
+            b.save(d/'manifest.json', manifest)
+            client = FakeClient()
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = b.run(self.scenario(), client, d, resume=True)
+            self.assertEqual(client.generations, 3)
+            self.assertEqual(result['successes'], 4)
+            self.assertEqual(result['pending_runs'], 0)
+            self.assertEqual((d/'run_00001.json').read_bytes(), first)
+            self.assertEqual(b.read_json(d/'run_00002.json')['uncertain_previous_attempts'], 1)
+            client = FakeClient()
+            with contextlib.redirect_stdout(io.StringIO()):
+                b.run(self.scenario(), client, d, resume=True)
+            self.assertEqual(client.calls, [])
+
+    def test_failed_runs_remain_failed(self):
+        with tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+            d = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                b.run(self.scenario(), FakeClient(fail_at=1), d)
+                client = FakeClient()
+                result = b.run(self.scenario(), client, d, resume=True)
+            self.assertEqual(result['failures'], 1)
+            self.assertEqual(result['successes'], 3)
+            self.assertEqual(client.calls, [])
+
+    def test_corrupt_deleted_and_modified_measurements(self):
+        for corruption in ('json', 'checksum', 'deleted'):
+            with self.subTest(corruption=corruption), tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+                d = Path(tmp)
+                self.interrupt(d)
+                path = d/'run_00001.json'
+                if corruption == 'deleted':
+                    path.unlink()
+                elif corruption == 'json':
+                    path.write_text('{')
+                else:
+                    record = b.read_json(path)
+                    record['eval_count'] = 99
+                    b.save(path, record)
+                client = FakeClient()
+                with self.assertRaises(ValueError):
+                    b.run(self.scenario(), client, d, resume=True)
+                self.assertEqual(client.calls, [])
+
+    def test_incompatible_scenario_runner_and_api(self):
+        for change in ('scenario', 'runner', 'api'):
+            with self.subTest(change=change), tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+                d = Path(tmp)
+                self.interrupt(d)
+                scenario = self.scenario()
+                client = FakeClient()
+                if change == 'scenario':
+                    scenario['num_ctx'] = 8192
+                elif change == 'runner':
+                    session = b.read_json(d/'session.json')
+                    session['runner_sha256'] = 'other'
+                    b.save(d/'session.json', session)
+                else:
+                    client.base_url = 'http://other.invalid'
+                with self.assertRaises(ValueError):
+                    b.run(scenario, client, d, resume=True)
+                self.assertEqual(client.calls, [])
+
+    def test_model_digest_must_match(self):
+        with tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+            d = Path(tmp)
+            self.interrupt(d)
+            client = FakeClient()
+            client.request = lambda *args: {'models': [{'name': 'tiny:latest', 'digest': 'changed'}]}
+            with self.assertRaisesRegex(ValueError, 'digest'):
+                b.run(self.scenario(), client, d, resume=True)
+
+    def test_double_resume_and_lock_release(self):
+        with tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+            d = Path(tmp)
+            self.interrupt(d)
+            client = FakeClient()
+            with b.archive_lock(d), self.assertRaisesRegex(ValueError, 'locked'):
+                b.run(self.scenario(), client, d, resume=True)
+            self.assertEqual(client.calls, [])
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(b.run(self.scenario(), client, d, resume=True)['completed_runs'], 4)
+
+    def test_partial_temporary_write_is_not_committed(self):
+        with tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+            d = Path(tmp)
+            self.interrupt(d)
+            (d/'run_00002.json.tmp').write_text('{partial')
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = b.run(self.scenario(), FakeClient(), d, resume=True)
+            self.assertEqual(result['completed_runs'], 4)
+            self.assertEqual(len(list(d.glob('run_*.json'))), 4)
+
+    def test_bad_model_response_is_not_success(self):
+        for response in ({'done': False}, {'done': True, 'eval_count': -1},
+                         {'done': True, 'eval_duration': float('nan')}, {'error': 'bad model'}):
+            with self.subTest(response=response), tempfile.TemporaryDirectory(dir=b.ROOT) as tmp:
+                d = Path(tmp)
+                client = FakeClient()
+                request = client.request
+                client.request = lambda endpoint, body=None: response if endpoint == '/api/generate' else request(endpoint, body)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    result = b.run(self.scenario(), client, d)
+                self.assertEqual(result['failures'], 4)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -178,7 +178,8 @@ Auch lokale Konfiguration, Secrets und Python-Caches sind ausgeschlossen.
 manuellen Packen eines Projektverzeichnisses.
 
 Für eine öffentliche Quellveröffentlichung ausschließlich diese Dateien aufnehmen:
-`benchmark.py`, `scenarios/smoke.json`, `tests/test_benchmark.py`, `README.md`,
+`benchmark.py`, `report.py`, `scenarios/smoke.json`, `tests/test_benchmark.py`,
+`tests/test_report.py`, `README.md`,
 `LICENSE`, `.gitignore` und `RELEASE_CHECKLIST.md`. Keine lokalen Ergebnisarchive,
 Caches, lokalen Prüfberichte oder Konfigurationen übernehmen. Vor dem tatsächlichen
 Release den fertigen Veröffentlichungsinhalt erneut auf vertrauliche Daten prüfen.
@@ -196,3 +197,156 @@ Die offenen Schritte stehen in `RELEASE_CHECKLIST.md`.
 
 Copyright 2026 Oliver Glück. Licensed under the Apache License, Version 2.0.
 See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+## Serien fortsetzen (Resume)
+
+```bash
+python3 benchmark.py scenarios/smoke.json --resume results/SERIENVERZEICHNIS
+```
+
+Die API-Konfiguration muss dieselbe sein wie beim Start. Ein Dry-Run-Archiv kann
+nur mit zusätzlichem `--dry-run` fortgesetzt werden; dies bleibt netzwerkfrei.
+Neue Archive enthalten `session.json` mit Formatversion, Runner-Version,
+Runner-SHA-256, vollständigem Szenario und API-Ziel. Jede Änderung des Runners
+(auch des Quelltextes), des wirksamen Szenarios, der API-Adresse oder des
+Dry-Run-Modus führt zum sicheren Abbruch vor einer Inferenz. Alte Archive ohne
+Resume-Metadaten werden nicht migriert oder überschrieben.
+
+Vor einer Fortsetzung mit offenen Messungen werden die Modelldigests aus der
+ursprünglichen Modellliste mit `/api/tags` verglichen. Fehlende oder abweichende
+Digests verhindern die Fortsetzung. Modellnamen allein reichen nicht aus.
+Archiviertes Original- und wirksames Szenario werden ebenfalls geprüft.
+
+Jede Kombination aus Modell, Threads, GPU-Modus und Wiederholung hat eine feste
+`run_index` und Dateinummer. Bereits gespeicherte **Erfolge und Fehler** werden
+beibehalten und nicht automatisch wiederholt. Eine vollständig abgearbeitete
+Serie mit Fehlern behält Exitcode 1. Für eine bewusste Wiederholung fehlgeschlagener
+Tests eine neue Serie starten. Vor noch offenen Messungen einer Konfiguration
+werden Entladen, Vorladen und Warmup gemäß Szenario erneut durchgeführt.
+
+`manifest.json` enthält geplante, abgeschlossene, erfolgreiche, fehlgeschlagene
+und offene Messungen sowie die aktuelle Konfiguration/Wiederholung. Die Anzeige
+nennt die feste Messnummer und Wiederholung. Beim Resume werden Fortschritt und
+Statistik aus den Messdateien rekonstruiert; ein hinterherhinkendes Manifest
+führt daher nicht zum doppelten Zählen. Manifest und Zusammenfassungen werden
+neu geschrieben. Die ursprünglichen Umgebungsdaten bleiben erhalten.
+
+### Abstürze, Dateifehler und Sperren
+
+Unter Linux/Ubuntu schützt eine nichtblockierende `fcntl.flock`-Sperre auf
+`.runner.lock` das gesamte Ergebnisverzeichnis. Ein zweiter Runner bricht mit
+Exitcode 2 ab. Die Sperre wird vom Kernel auch nach Prozessabbruch freigegeben;
+die Sperrdatei bleibt bestehen und darf nicht während eines laufenden Tests
+entfernt werden. Verwende ein lokales Dateisystem mit verlässlicher `flock`- und
+atomarer Rename-Unterstützung. Die Sperre schützt kooperierende Runner-Prozesse,
+nicht externe manuelle Dateimanipulationen.
+
+JSON-Schreibvorgänge verwenden temporäre Dateien, `fsync` und atomaren Austausch.
+Unfertige `.tmp`-Dateien zählen nicht als abgeschlossene Messungen. Messdateien
+enthalten Prüfsummen und werden auf Identität, Konfiguration und Ergebnisstruktur
+geprüft. Beschädigte Dateien oder laut Manifest fehlende abgeschlossene Messungen
+führen zum Abbruch; sie werden nicht stillschweigend übersprungen. Prüfsummen
+sind Integritätsprüfungen, keine Signaturen gegen absichtliche Manipulation.
+
+Vor jedem Messversuch wird `intent_XXXXX.json` dauerhaft geschrieben. Ein Abbruch
+nach Absenden der Anfrage, aber vor dem dauerhaften Speichern der Antwort lässt
+sich ohne serverseitige Transaktionsunterstützung nicht als Erfolg rekonstruieren.
+Beim Resume wird diese offene Messung erneut versucht; die Anzahl unklarer früherer
+Versuche steht unter `uncertain_previous_attempts`. Es wird nur die dauerhaft
+abgeschlossene Messung gezählt. Bereits dauerhaft gespeicherte Erfolge werden
+niemals erneut angefragt. Ollama kann nach einem Client-Abbruch noch beschäftigt
+sein; vor dem Resume serverseitig das Ende einer solchen Anfrage sicherstellen.
+
+Das kumulierte `wall_seconds` erfasst die gespeicherten Ausführungszeiten der
+Sessions, ohne Pausen zwischen Neustarts. Bei hartem Prozessabbruch kann die seit
+dem letzten Manifest verstrichene Laufzeit fehlen. Fehlende/zerstörte grundlegende
+Sitzungsmetadaten werden nicht automatisch repariert; dann eine neue Serie starten.
+
+
+## Statische HTML-Auswertung (v0.2.0 – Schritt 2)
+
+`report.py` ist ein eigenständiges Offline-CLI mit ausschließlich Python-
+Standardbibliothek (Python 3.10+). Ollama muss für die Auswertung nicht laufen.
+Es liest vorhandene Archive und verändert weder Messdateien noch Runner-Code.
+
+Einzelbericht:
+
+```bash
+python3 report.py results/RUN_ID --output reports/einzelbericht.html
+```
+
+Vergleich mehrerer Archive:
+
+```bash
+python3 report.py results/RUN_A results/RUN_B --output reports/vergleich.html
+```
+
+Die HTML-Datei kann direkt im lokalen Browser geöffnet werden. Sie enthält alle
+Styles und Balkendiagramme selbst, benötigt weder JavaScript noch externe Fonts,
+CDNs oder Netzwerkzugriffe und passt sich mobilen Bildschirmen an. Breite Tabellen
+können horizontal gescrollt werden. Exitcode 0 bedeutet erfolgreiche Erzeugung,
+Exitcode 2 einen Eingabe-, Archiv- oder Dateifehler.
+
+Eingaben müssen innerhalb des Projekts liegen. Ausgabedateien müssen die Endung
+`.html` haben und innerhalb des Projekts, aber außerhalb von `results/` und den
+angegebenen Archiven liegen. Bestehende Dateien werden nicht überschrieben.
+Generierte Berichte unter `reports/` sind in `.gitignore` ausgeschlossen.
+
+### Inhalt und Statistik
+
+Der Bericht zeigt je Archiv Start/Ende, Status und Gesamtlaufzeit aus dem Manifest,
+geplante, abgeschlossene, erfolgreiche und fehlgeschlagene Messungen. Die
+Konfigurationstabelle enthält Modellname, Digest, Threads, GPU-Modus, Kontextgröße
+und Thinking-Einstellung. Unterschiedliche Digests oder Konfigurationen werden
+getrennt gruppiert. Archivnummern entsprechen der Reihenfolge der CLI-Argumente;
+Archivpfade werden nicht im HTML angezeigt.
+
+Für Generierungsdurchsatz und Promptverarbeitung (tokens/s) sowie Generierungsdauer
+(in Sekunden) werden Mittelwert, Median, Stichprobenstandardabweichung und die
+jeweilige Anzahl gültiger Werte angezeigt. Statistiken werden aus `run_*.json`
+neu berechnet, statt möglicherweise veraltete `summary.json`-/CSV-Werte zu verwenden.
+Fehlgeschlagene Messungen bleiben in den Fehlerzahlen, fließen aber nicht in
+Leistungsstatistiken ein. Dauerwerte werden von Nanosekunden in Sekunden umgerechnet;
+Durchsatz wird aus Tokenzahl und zugehöriger Dauer berechnet. Fehlende Werte und
+Durchsatz bei Dauer null erscheinen als `—`; die Standardabweichung ist erst ab
+zwei gültigen Messungen verfügbar. Fehlende alte Kontext-/Thinking-Angaben werden
+nicht durch heutige Standardwerte ersetzt.
+
+Balken zeigen den mittleren Generierungsdurchsatz auf gemeinsamer Skala, farblich
+nach `cpu_only` und `automatic` getrennt. `automatic` bedeutet automatische
+Ollama-Verteilung, keine bestätigte GPU-Nutzung. Vergleiche mehrerer Archive werden
+nicht zu einer gemeinsamen Statistik vermischt. Abweichende Szenarien werden
+markiert; gleiche Szenarien garantieren keine identischen Serverbedingungen.
+
+### Unvollständige Archive und Datenschutz
+
+`manifest.json` und `scenario.json` müssen gültige JSON-Objekte sein. Fehlerhafte
+JSON-Dateien, ungültige Messwerte, widersprüchliche Messidentitäten oder abweichende
+vorhandene Messprüfsummen führen zum Abbruch. Ältere Messdateien ohne Prüfsumme
+werden unterstützt; diese bieten keine entsprechende Integritätsbestätigung.
+Fehlende Einzelmessungen, Dry-Runs und unvollständige Serien werden als Warnungen
+angezeigt; ausgewertet werden ausschließlich tatsächlich vorhandene Messdateien.
+Temporäre Dateien zählen nicht als abgeschlossene Messungen. Für eine konsistente
+Auswertung vorzugsweise ein ruhendes Archiv verwenden; der Report verändert keine
+Sperrdateien und hält eine laufende Benchmark-Serie nicht an.
+
+Fehlermeldungen und dokumentierte unklare frühere Versuche erscheinen in einem
+aufklappbaren Abschnitt. `intent_*.json` ohne zugehöriges Messergebnis wird als
+offener Versuch mit unbekanntem Ausgang ausgewiesen. Es werden keine Messwerte
+aus begonnenen oder unterbrochenen Versuchen erfunden.
+
+Alle aus Archiven angezeigten Texte werden HTML-escaped. Eine Content Security
+Policy blockiert Skripte und externe Ressourcen. API-Adresse, Runner-Hostname,
+Archivpfade, Prompts und Modellantworttexte werden nicht als Metadaten übernommen.
+Bekannte lokale Hostangaben sowie URL-, IP- und typische Benutzer-/Systempfade in
+Freitext werden redigiert. Das ersetzt keine vollständige Anonymisierung: etwa
+Modellnamen oder beliebige Fehlermeldungen können weitere vertrauliche Angaben
+enthalten. Den fertigen Bericht vor einer Weitergabe prüfen.
+
+Die Report-Tests decken Escaping, fehlende Messwerte, fehlerhafte/teilweise Archive,
+Archivvergleich, Gruppierung, Statistik und Einheiten, Datenschutz, Pfadbegrenzung,
+Netzwerkfreiheit sowie unveränderte Quelldaten ab. Alle Tests starten wie bisher mit:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
