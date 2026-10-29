@@ -1,0 +1,36 @@
+# Python build/runtime artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+# Benchmark archives and local review data
+/results/
+*.local.*
+*.local
+# Local configuration
+.env
+.env.*
+/config.local/
+/config.local.*
+/scenarios/local/
+/scenarios/*.local.json
+# Credentials and secrets
+/secrets/
+/credentials/
+credentials.*
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+# Editor/OS files
+.vscode/
+.idea/
+*~
+.DS_Store

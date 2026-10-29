@@ -1,0 +1,16 @@
+{
+  "models": ["phi4-mini:3.8b"],
+  "threads": [4, 8],
+  "gpu_modes": ["cpu_only", "automatic"],
+  "repetitions": 1,
+  "unload_before": true,
+  "preload": true,
+  "warmup": 1,
+  "timeout_seconds": 300,
+  "num_predict": 64,
+  "seed": 42,
+  "think": false,
+  "num_ctx": 16384,
+  "keep_alive": "5m",
+  "prompt": "Erkläre in drei kurzen Sätzen, wie ein Computerprozessor arbeitet."
+}
