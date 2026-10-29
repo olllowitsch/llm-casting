@@ -350,3 +350,134 @@ Netzwerkfreiheit sowie unveränderte Quelldaten ab. Alle Tests starten wie bishe
 ```bash
 python3 -m unittest discover -s tests -v
 ```
+
+## Zentrales Offline-Dashboard (v0.2.0 – Schritt 3)
+
+Alle unmittelbaren Archiv-Unterverzeichnisse unter `results/` automatisch erfassen:
+
+```bash
+python3 dashboard.py
+```
+
+Standardausgabe: `reports/dashboard.html`. Für eine andere Zieldatei oder eine
+gezielte Archivauswahl:
+
+```bash
+python3 dashboard.py --output reports/uebersicht.html
+python3 dashboard.py results/RUN_A results/RUN_B --output reports/auswahl.html
+```
+
+Das Dashboard ist eine einzelne lokale HTML-Datei. Es benötigt weder Ollama noch
+Netzwerkzugriff oder zusätzliche Python-Pakete. Es ist eine Momentaufnahme; nach
+neuen Benchmarks erneut mit einem neuen Ausgabedateinamen erzeugen. Vorhandene
+Dateien werden nicht überschrieben. Ein fehlendes oder leeres `results/` erzeugt
+eine lesbare leere Übersicht. Nur unmittelbare Unterverzeichnisse werden gescannt;
+Symlink-Archive und Pfade außerhalb des Projekts werden abgewiesen. Die Ausgabe
+muss außerhalb der Ergebnisarchive und innerhalb des Projekts liegen.
+
+### Inhalt und Bedienung
+
+Die Übersicht zählt gefundene, gültige und ausgeschlossene Archive, Modelle mit
+Messdateien, vollständige und offene/unterbrochene Serien, Dry-Runs sowie Erfolge,
+Fehler und offene Messungen. Vollständig bedeutet: Status `complete`, alle
+geplanten Messdateien vorhanden und keine offenen Anfragen. Auch vollständig
+abgearbeitete Serien mit Messfehlern werden als solche ausgewiesen. `running`
+bezeichnet einen offenen Stand; das Dashboard kann nicht erkennen, ob der Prozess
+noch läuft oder hart beendet wurde. Dry-Run-Pläne zählen nicht als offene echte
+Messungen. Fehlt eine Plananzahl, wird die Zahl offener Messungen als unbekannt
+markiert und nicht erfunden. Fehlerhafte Archive fließen nicht in Leistungs- oder
+Messungszählungen ein. Ihre Anzahl bleibt sichtbar.
+
+Der letzte Benchmark-Zeitpunkt ist der späteste dokumentierte Messbeginn in UTC,
+ersatzweise der Serienbeginn bei vorhandenen Messungen. Dry-Run-Zeitpunkte zählen
+nicht. Serienlaufzeiten stammen aus dem Manifest. Fehlende Daten werden als `—`
+gekennzeichnet; wie beim Report ist die Streuung die Stichprobenstandardabweichung.
+
+Die Benchmark-Tabelle enthält pro Archiv und Workload-Gruppe Modell/Digest,
+Threads, GPU-Modus, Kontext, Thinking, Anzahl Messungen, Erfolge/Fehler sowie
+Mittelwert, Median, Streuung und Stichprobengröße für Tokens/s. Die Laufzeitspalte
+bezeichnet die **gesamte Serie**, nicht die Dauer einer einzelnen Konfiguration.
+Modell-, GPU- und Statusfilter sowie Sortierung nach Tokens/s oder Serienlaufzeit
+laufen ausschließlich im eingebetteten JavaScript. Fehlende Sortierwerte stehen
+in beiden Richtungen am Ende. Ohne JavaScript bleiben alle Zeilen und die gesamte
+Detailansicht sichtbar. Filter ändern nur die Benchmark-Tabelle; Zähler,
+Vergleichsdiagramme und Seriendetails beziehen sich stets auf die gesamte Auswahl.
+
+Archivlinks springen zu Seriendetails innerhalb derselben Datei. Die Details
+verwenden die Darstellung aus `report.py` einschließlich Prompt-Tokens/s,
+Generierungsdauer, Statistik und dokumentierter Unterbrechungen. Zuordnung erfolgt
+über Archivnummern und standardisierte Run-IDs. Benutzerdefinierte Verzeichnisnamen
+werden nicht veröffentlicht; bei einer expliziten Auswahl entspricht die Nummer
+der Argumentreihenfolge, beim automatischen Scan der sortierten Verzeichnisliste.
+
+### Vergleichbarkeit und Hardware
+
+Es gibt keine archivübergreifende Mittelung. Vergleichsgruppen `V1`, `V2` usw.
+werden ausschließlich aus vollständigen gespeicherten Generierungsrequests und
+Konfigurationsdaten bestimmt. Modellname, Modelldigest, Kontextgröße, Thinking,
+Prompt und alle weiteren Request-Einstellungen (z. B. Seed, Temperatur,
+`num_predict`, Systemtext und Keep-alive) müssen übereinstimmen. Nur `num_thread`
+und `num_gpu` werden für die Gruppierung als beabsichtigte Vergleichsachsen
+ausgenommen. Prompts und deren Fingerprints werden nicht in die HTML-Datei
+übernommen. Innerhalb eines Archivs mit abweichenden Requests werden getrennte
+Zeilen gebildet. Fehlende Metadaten erlauben keine bestätigte Vergleichsgruppe.
+
+Nur Zeilen derselben V-Gruppe werden auf einer gemeinsamen Balkenskala gezeigt.
+CPU-only und automatic werden farblich unterschieden; Threadzahlen stehen an den
+Balken. `automatic` garantiert keine tatsächliche GPU-Nutzung. Unterschiedliche
+V-Gruppen sind sichtbar als nicht vergleichbar gekennzeichnet. Eine einzelne
+Zeile einer Gruppe wird als ohne kompatiblen Vergleichspartner markiert.
+
+Die aktuellen Runner-Archive erfassen keine verlässliche Inventarisierung der
+entfernten Serverhardware. Deshalb steht dort **Serverhardware unbestätigt**.
+Hostinformationen des Runners werden nicht als Serverhardware ausgegeben.
+Falls ein Archiv bereits ein nichtleeres JSON-Objekt `server_hardware` in
+`environment.json` enthält, werden unterschiedliche Objekte anonym als `H1`,
+`H2` usw. unterschieden. Es werden keine Hardwaredetails aus Hostnamen, IP-Adressen
+oder Modelldurchsatz abgeleitet. Damit können gleiche Workloads über bekannte
+Hardwarekonfigurationen verglichen werden, ohne deren interne Angaben zu zeigen.
+Übereinstimmende Workloads garantieren keine gleichen Cache-, Last- oder
+thermischen Bedingungen. Der Runner wurde dafür nicht verändert.
+
+### Sicherheit, beschädigte Archive und Tests
+
+`dashboard.py` verwendet den Archivleser und die Statistikfunktionen aus
+`report.py` wieder. Zusätzliche Validierungen erkennen unter anderem widersprüchliche
+Request-Konfigurationen. Ungültige Archive erscheinen als ausgeschlossen; gültige
+Archive werden weiter ausgewertet. Unvollständige, aber lesbare Serien behalten
+sichtbare Warnungen. Rohfehlermeldungen und Parserpfade werden im Dashboard nicht
+ausgegeben, da sie Zugangsdaten, Prompttext oder interne Adressen enthalten können.
+Die Originalfehlermeldungen verbleiben im lokalen Archiv. Für eine konsistente
+Momentaufnahme vorzugsweise ruhende Archive verwenden.
+
+Das HTML enthält keine Prompts, Modellantworten, Request-Dumps, API-Adressen,
+Runner-Hostnamen oder lokalen Archivpfade. Dynamische Texte werden escaped und
+bekannte vertrauliche Angaben redigiert. Die Content Security Policy erlaubt
+nur das feste eingebettete Skript über dessen SHA-256-Hash und blockiert
+Netzwerkverbindungen sowie externe Ressourcen. Archivdaten werden niemals als
+JavaScript eingesetzt; Filter verwenden DOM-Eigenschaften statt `innerHTML`.
+Modellnamen sind Freitext und sollten vor einer öffentlichen Weitergabe zusätzlich
+auf organisationsspezifische Informationen geprüft werden.
+
+Exitcodes: `0` Dashboard erfolgreich, `1` Dashboard erzeugt, aber Archive als
+ungültig ausgeschlossen, `2` Auswahl-/Ausgabe-/Dateifehler. Die Quelldaten werden
+nicht geändert; generierte Dashboards unter `reports/` sind bereits ignoriert.
+
+Alle Python-Tests verwenden nur die Standardbibliothek. Wenn auf dem Testsystem
+bereits `node` vorhanden ist, führt ein zusätzlicher Test das tatsächlich
+mitgelieferte JavaScript für Filter, Sortierung, fehlende Werte und DOM-Sichtbarkeit
+mit einer minimalen lokalen DOM-Simulation aus; ohne Node wird ausschließlich
+dieser Test übersprungen. Es wird nichts installiert. Node ist keine Voraussetzung
+für Dashboard-Erzeugung oder Browser-Nutzung.
+
+### Welches Werkzeug wofür?
+
+| Werkzeug | Zweck |
+| --- | --- |
+| `report.py results/RUN_ID -o reports/report.html` | Einzelarchiv mit ausführlicher Statistik |
+| `report.py results/RUN_A results/RUN_B -o reports/vergleich.html` | Explizite, getrennte Gegenüberstellung ausgewählter Archive |
+| `dashboard.py -o reports/dashboard.html` | Zentrale Übersicht, strenge Workload-Gruppen, Filter, Sortierung und integrierte Details |
+
+Für die Quellveröffentlichung zusätzlich `dashboard.py` und
+`tests/test_dashboard.py` aufnehmen. Generierte HTML-Dashboards sind lokale
+Auswertungsartefakte, keine automatisch zur Veröffentlichung freigegebenen Daten.
