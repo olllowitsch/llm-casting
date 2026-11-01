@@ -1,0 +1,82 @@
+{
+  "kind": "rubric",
+  "schema_version": 1,
+  "rubric_id": "66666666-6666-4666-8666-666666666666",
+  "revision": 1,
+  "name": "Schematische Performance-Rubric",
+  "discipline": "performance",
+  "categories": [
+    {
+      "category_id": "response",
+      "name": "Vollst\u00e4ndige Antwort",
+      "source": "deterministic",
+      "weight_bps": 7000,
+      "max_points": 10,
+      "anchors": [
+        {
+          "points": 0,
+          "description": "Antwort unvollst\u00e4ndig oder ung\u00fcltig."
+        },
+        {
+          "points": 10,
+          "description": "Test response_complete bestanden."
+        }
+      ],
+      "test_suite_id": "performance_response_v1"
+    },
+    {
+      "category_id": "rate",
+      "name": "Schematische Durchsatzgrenze",
+      "source": "deterministic",
+      "weight_bps": 3000,
+      "max_points": 10,
+      "anchors": [
+        {
+          "points": 0,
+          "description": "Vorhandener g\u00fcltiger Durchsatz unter 1 Token/s."
+        },
+        {
+          "points": 10,
+          "description": "Vorhandener g\u00fcltiger Durchsatz mindestens 1 Token/s."
+        }
+      ],
+      "test_suite_id": "performance_rate_v1"
+    }
+  ],
+  "mandatory_tests": [
+    "response_complete"
+  ],
+  "grading": {
+    "mode": "score_only"
+  },
+  "test_suites": [
+    {
+      "suite_id": "performance_response_v1",
+      "adapter": "performance_checks",
+      "version": 1,
+      "checks": [
+        {
+          "test_id": "response_complete",
+          "metric": "execution.status",
+          "operator": "eq",
+          "expected": "succeeded"
+        }
+      ],
+      "assets": []
+    },
+    {
+      "suite_id": "performance_rate_v1",
+      "adapter": "performance_checks",
+      "version": 1,
+      "checks": [
+        {
+          "test_id": "minimum_rate",
+          "metric": "tokens_per_second",
+          "operator": "gte",
+          "expected": "1.00"
+        }
+      ],
+      "assets": []
+    }
+  ]
+}

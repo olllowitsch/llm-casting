@@ -481,3 +481,24 @@ für Dashboard-Erzeugung oder Browser-Nutzung.
 Für die Quellveröffentlichung zusätzlich `dashboard.py` und
 `tests/test_dashboard.py` aufnehmen. Generierte HTML-Dashboards sind lokale
 Auswertungsartefakte, keine automatisch zur Veröffentlichung freigegebenen Daten.
+
+
+## S1: Wettbewerbs- und Rubricdefinitionen prüfen
+
+Die unabhängigen Definitionsvalidatoren sind implementiert; Laufkoordination,
+Agenten, Testausführung und Bewertung folgen erst in späteren Roadmap-Schritten.
+Bestehende Benchmark-, Resume-, Report- und Dashboard-Aufrufe bleiben unverändert.
+
+```sh
+python3 definitions.py rubric tests/fixtures/definitions/valid/rubric.json
+python3 definitions.py competition tests/fixtures/definitions/valid/competition.json \
+  --rubric tests/fixtures/definitions/valid/rubric.json \
+  --assets tests/fixtures/definitions/valid/assets
+```
+
+Das CLI liest ausschließlich lokale Definitionen/Assets und meldet JSON mit
+Hash, executable=false und history_checked. Für Revisionsvergleiche --previous
+mit einer vertrauenswürdigen bisherigen Definition angeben. Es führt keine
+Modell-, Agenten- oder Testadapteraufrufe durch. API, Limits, Fehlercodes und
+negative Beispiele: [S1-Validierung](docs/S1_VALIDATION.md).
+Weitere Entwicklung: [ROADMAP.md](ROADMAP.md).

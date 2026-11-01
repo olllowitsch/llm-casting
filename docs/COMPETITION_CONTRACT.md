@@ -1,6 +1,7 @@
 # Wettbewerb – JSON-Vertrag v1 (Ziel v0.3+)
 
-Verbindlicher Entwurf, noch kein vorhandener Parser. Grundlage:
+Verbindlicher Vertrag v1; S1-Parser und Validator sind implementiert:
+[S1_VALIDATION.md](S1_VALIDATION.md). Grundlage:
 [Architektur](ARCHITECTURE.md); Umsetzung: [Roadmap](../ROADMAP.md).
 Ein bestehendes Performance-Szenario ist noch keine Wettbewerbsdefinition.
 
@@ -111,5 +112,6 @@ referenzierten Inhalte unveränderlich archivieren. Bei Resume dieselben Belege
 prüfen, keine aktuelle Wettbewerbsdatei nachladen. Fehler führen zum sicheren
 Abbruch vor Adapterarbeit. Pflichtprüfungen: Promptänderung ohne Versionswechsel,
 mutierte Assets, Traversal/Links, Duplikate, falsche Rubric/Disziplin und unbekannte
-Schema-Versionen. Formale JSON-Schema-Dateien und Validatoren entstehen erst im
-ersten Implementierungsschritt, diese Dokumente behaupten deren Existenz nicht.
+Schema-Versionen. Formale JSON-Schema-Dateien liegen unter schemas/, die vollständigen
+Validatoren in definitions.py. Grenzen, Profilregistrierung und der Vergleich
+mit vertrauenswürdigen Vorgängerdefinitionen stehen in der S1-Dokumentation.

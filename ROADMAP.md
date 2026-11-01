@@ -1,7 +1,8 @@
 # LLM Casting Show – verbindliche Roadmap v0.3+
 
-Status: Dokumentationskandidat zur unabhängigen MCP-Prüfung und anschließenden
-Commit-Freigabe. Keine neue Enginefunktion wurde mit diesem Dokument implementiert.
+Status: S1-Definitionsvalidatoren implementiert und lokal geprüft; unabhängige
+MCP-Prüfung und Commit-Freigabe stehen aus. Laufkoordination, Ausführung und
+Bewertung sind weiterhin geplant.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
 Verträge: [Architektur](docs/ARCHITECTURE.md),
@@ -48,16 +49,21 @@ Zielversionen sind Planungsgrenzen, keine Termine oder Zusagen zur Provider-API.
 
 ### S1 – Versionierte Definitionsvalidatoren
 
-- [ ] Abgeschlossen
+- [x] Abgeschlossen
 - Ziel: Wettbewerb und Rubric ohne Ausführung sicher laden und pinnen.
-- Komponenten: neue reine Vertrags-/Hash-/Validierungsfunktionen, formale
-  Schema-Dateien und kleine synthetische Fixtures; vorhandene CLIs unverändert.
+- Komponenten: definitions.py, schemas/competition.schema.json und
+  schemas/rubric.schema.json, tests/test_definitions.py und synthetische Fixtures;
+  vorhandene CLIs unverändert.
 - Akzeptanz: eindeutige IDs/Revisionen, genau ein gemeinsamer Prompt, Assetinventar,
   passende Disziplin/Rubric, eindeutige Canonical-JSON-Bytes und Versionsablehnung.
 - Tests: gültige Roundtrips, unbekannte Felder/Versionen, Bool/Integer, doppelte
   JSON-Schlüssel, Hash-/Promptdrift, Traversal/Links, Gewichte und Punkteanker.
 - Abhängigkeiten: unabhängige Prüfung der hier definierten Verträge. Kein Ollama,
-  OpenCode, DB oder neuer Prozessadapter nötig. **Empfohlener erster Schritt.**
+  OpenCode, DB oder neuer Prozessadapter nötig.
+
+Lokaler Nachweis: 49 neue S1-Tests und alle 61 bisherigen Tests bestanden
+(110/110, keine Skips). API, Limits, Profil und Revisionsvertrauensgrenze:
+[S1_VALIDATION.md](docs/S1_VALIDATION.md). Keine Inferenz oder Testadapterausführung.
 
 ### S2 – Unveränderlicher Laufplan und portables Ergebnis
 
@@ -173,6 +179,8 @@ Zielversionen sind Planungsgrenzen, keine Termine oder Zusagen zur Provider-API.
 - Ziel: Verwaltung/Steuerung/Persistenz und UI ergänzen, ohne die Engine zu kopieren.
 - Komponenten: ausschließlich künftig im dicomat-Projekt zu entwickelnder Adapter,
   PostgreSQL-Persistenz, bestehende Authentifizierung, DataGrids/Diagramme/Historie.
+  Vorgesehene Tabs: Wettbewerbe / Läufe / Benchmarks / Zeugnisse. Die bestehende
+  Benchmark-Seite bleibt erhalten; keine UI-Implementierung in S1.
 - Akzeptanz: Wettbewerb anlegen/versionieren, Lauf starten/Status/Abbruch/Resume
   mit denselben IDs und JSON-Verträgen; Engine bleibt standalone nutzbar;
   keine Browserpfade/freien Shell-Kommandos, keine zweite Bewertungslogik.

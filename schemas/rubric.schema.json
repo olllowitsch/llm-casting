@@ -1,0 +1,319 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "schema_version",
+    "rubric_id",
+    "revision",
+    "name",
+    "discipline",
+    "categories",
+    "test_suites",
+    "mandatory_tests",
+    "grading"
+  ],
+  "properties": {
+    "kind": {
+      "const": "rubric"
+    },
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "rubric_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "minLength": 36,
+      "maxLength": 36
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 262144,
+      "pattern": "\\S"
+    },
+    "discipline": {
+      "const": "performance"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category_id",
+          "name",
+          "source",
+          "weight_bps",
+          "max_points",
+          "anchors"
+        ],
+        "properties": {
+          "category_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 262144,
+            "pattern": "\\S"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 262144,
+            "pattern": "\\S"
+          },
+          "source": {
+            "enum": [
+              "deterministic",
+              "human",
+              "llm_jury"
+            ]
+          },
+          "weight_bps": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "max_points": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "anchors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "points",
+                "description"
+              ],
+              "properties": {
+                "points": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 262144,
+                  "pattern": "\\S"
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 50000
+          },
+          "test_suite_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 262144,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 50000
+    },
+    "test_suites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "suite_id",
+          "adapter",
+          "version",
+          "checks",
+          "assets"
+        ],
+        "properties": {
+          "suite_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 262144,
+            "pattern": "\\S"
+          },
+          "adapter": {
+            "const": "performance_checks"
+          },
+          "version": {
+            "type": "integer",
+            "const": 1
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "test_id",
+                "metric",
+                "operator",
+                "expected"
+              ],
+              "properties": {
+                "test_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 262144,
+                  "pattern": "\\S"
+                },
+                "metric": {
+                  "enum": [
+                    "execution.status",
+                    "tokens_per_second",
+                    "prompt_tokens_per_second"
+                  ]
+                },
+                "operator": {
+                  "enum": [
+                    "eq",
+                    "gte",
+                    "lte"
+                  ]
+                },
+                "expected": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$",
+                      "maxLength": 262144
+                    },
+                    {
+                      "enum": [
+                        "succeeded",
+                        "failed",
+                        "timed_out",
+                        "cancelled"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "metric": {
+                        "const": "execution.status"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "operator": {
+                        "const": "eq"
+                      },
+                      "expected": {
+                        "enum": [
+                          "succeeded",
+                          "failed",
+                          "timed_out",
+                          "cancelled"
+                        ]
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "operator": {
+                        "enum": [
+                          "gte",
+                          "lte"
+                        ]
+                      },
+                      "expected": {
+                        "type": "string",
+                        "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$",
+                        "maxLength": 262144
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 50000
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/asset"
+            },
+            "minItems": 0,
+            "maxItems": 1000
+          }
+        }
+      },
+      "minItems": 0,
+      "maxItems": 50000
+    },
+    "mandatory_tests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 262144,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 50000,
+      "uniqueItems": true
+    },
+    "grading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "const": "score_only"
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LLM Casting Rubric v1 (S1 performance profile)",
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes",
+        "role"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 262144,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*[\\\\:*?\\[\\]\\x00-\\x1f\\x7f])[^/]+(?:/[^/]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "role": {
+          "enum": [
+            "input",
+            "test"
+          ]
+        }
+      }
+    }
+  }
+}

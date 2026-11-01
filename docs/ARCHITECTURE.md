@@ -1,7 +1,8 @@
 # LLM Casting Show – Architektur v0.3+
 
-Status: verbindlicher Zielvertrag zur unabhängigen Prüfung; noch keine neue
-Engine implementiert. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
+Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren sind implementiert
+([S1_VALIDATION.md](S1_VALIDATION.md)); Ausführungsengine und Bewertung sind noch
+geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
 ## Bestehender Stand v0.2.0
@@ -93,6 +94,10 @@ in PostgreSQL und stellt DataGrids, Diagramme und Historie dar. Bestehende
 Authentifizierung und Berechtigungen schützen Verwaltung, Start, Abbruch,
 Dateizugriff und Export. PostgreSQL-Schema und UI sind ausschließlich Sache der
 Integration, keine importierbaren Engine-Abhängigkeiten.
+
+Die geplante Tabstruktur lautet **Wettbewerbe / Läufe / Benchmarks / Zeugnisse**.
+Die bestehende Benchmark-Seite bleibt erhalten. Diese Struktur ist eine Vorgabe
+für die spätere Integration, keine in S1 implementierte WebUI.
 
 Die Integration ruft dieselbe Engine auf und importiert dieselben Ergebnis-
 objekte wie Standalone. Kein kopierter Runner, keine zweite Bewertungslogik.
