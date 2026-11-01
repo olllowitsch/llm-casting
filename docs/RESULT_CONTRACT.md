@@ -1,6 +1,7 @@
 # Portables Ergebnis – JSON-Vertrag v1 (Ziel v0.3+)
 
-Verbindlicher Zielvertrag, noch kein Ersatz heutiger Archive. Verweise:
+Verbindlicher Vertrag; [S2-Validierung/Serialisierung](S2_PLANNING.md) ist
+implementiert, weiterhin kein Ersatz heutiger Archive. Verweise:
 [Architektur](ARCHITECTURE.md), [Wettbewerb](COMPETITION_CONTRACT.md),
 [Lauf](RUN_CONTRACT.md), [Rubric/Zeugnis](RUBRIC_CONTRACT.md),
 [Roadmap](../ROADMAP.md). Gemeinsame JSON-/Hashregeln wie im Wettbewerbsvertrag.
@@ -142,3 +143,37 @@ Pflichttests: Standalone-/Integrations-Roundtrip, unbekannte Version, fehlende W
 Timing-Einheiten und Formeln, widersprüchliche IDs/Hashes, Neubewertung,
 Archivkorruption, Abbruch-/Intentzählung, öffentliche Datenminimierung und XSS,
 Dateiaustausch/Links, keine Netzwerkzugriffe beim Rendern, unveränderte Quelldaten.
+
+
+## Konkretisierung der Unterobjekte im S2-Profil
+
+Bestehende Kernfelder/JSON-Beispiele bleiben unverändert. executions[] enthält
+genau execution und sha256; der Executionkörper hat exakt die oben genannten
+15 Felder. metrics enthält die neun genannten Metriken jeweils explizit, bei
+fehlender Beobachtung null. Daten werden nur geprüft, nicht zu Messwerten ergänzt.
+Ein nicht exakt als endlicher Dezimalstring darstellbarer Durchsatz wird einmal
+mit ROUND_HALF_UP auf sechs Nachkommastellen gerundet, kanonisch ohne redundante
+Nullen; exakt darstellbare Quotienten dürfen ihre exakte Präzision behalten.
+Das ist eine Regel für neue S2-Objekte, keine Änderung bestehender Archive.
+
+error ist null oder genau code, phase, retryable, evidence. evidence ist eine
+Liste eindeutiger UUID-Verweise auf private Artefakte desselben Versuchs.
+provenance ist {} bei unbekannter Herkunft oder genau engine, adapter_version,
+model_revision_digest und evidence. Die ersten drei Werte müssen den deklarierten
+Planangaben entsprechen; sie allein beweisen keine tatsächliche Providerbeobachtung.
+Freie Rohmeldungen, Requestdumps, Hostpfade oder Zugangsdaten sind keine erlaubten
+Provenienzfelder. Auch Belegreferenzen beweisen ohne extern gesicherte Originale
+keine Authentizität. S2 liest/kopiert keine Artefaktbytes; dies bleibt S3.
+
+Die strukturelle Zeugnisreferenz verwendet rubric_id/revision/sha256, evaluator
+mit type/version/identity sowie die im [S2-Profil](S2_PLANNING.md) beschriebenen
+Kategorie-/Testbelege. Eine andere Neubewertungsrubric muss separat geliefert und
+gebunden werden. Es erfolgt keine Bewertung oder Scoreberechnung; nur Referenz-,
+Typ-, Bereichs- und Statuskonsistenzprüfung vorhandener Daten. Plan und frühere
+Zeugnisse werden nicht nachträglich überschrieben.
+
+Alle Fortschrittswerte werden aus den gebundenen Einzelbelegen gegengeprüft.
+S2 unterstützt deren Validierung und eine leere initiale Result-Erzeugung, keine
+Modellausführung. Ein Timeout ohne bestätigtes Ende gehört zu uncertain; der
+spätere Executor muss dies durchsetzen. Die Nachweisgrenze der reinen Metadaten-
+prüfung, Zeitpräzision, Anlaufketten und CLI stehen in S2_PLANNING.md.

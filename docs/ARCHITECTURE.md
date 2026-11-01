@@ -1,8 +1,8 @@
 # LLM Casting Show – Architektur v0.3+
 
-Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren sind implementiert
-([S1_VALIDATION.md](S1_VALIDATION.md)); Ausführungsengine und Bewertung sind noch
-geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
+Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren und reine S2-Plan-/
+Ergebnisvalidierung sind implementiert ([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md)).
+Ausführungsengine und Bewertung sind noch geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
 ## Bestehender Stand v0.2.0

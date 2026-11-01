@@ -1,6 +1,7 @@
 # Wettbewerbslauf – JSON-Vertrag v1 (Ziel v0.3+)
 
-Verbindlicher Entwurf, noch kein neuer Runner. [Architektur](ARCHITECTURE.md),
+Verbindlicher Vertrag; [S2-Planung/Validierung](S2_PLANNING.md) ist implementiert,
+noch kein neuer ausführender Runner. [Architektur](ARCHITECTURE.md),
 [Wettbewerb](COMPETITION_CONTRACT.md), [Ergebnis](RESULT_CONTRACT.md),
 [Roadmap](../ROADMAP.md). Hash-/JSON-Regeln gelten wie im Wettbewerbsvertrag.
 
@@ -201,3 +202,26 @@ Pflichttests: Abbruch an jeder Persistenzgrenze, doppelte Resume-/Startanforderu
 wechselnder Digest/Plan/Prompt, beschädigte Belege, verbliebene Prozesse,
 Antwort nach Timeout, neue Anlauf-ID ohne doppelte Messplatzwertung, keine
 Wiederholung terminaler Fehler und keine Übernahme fremder Workspace-Dateien.
+
+
+## Implementiertes S2-Profil (Schema v1)
+
+Das [S2-Profil](S2_PLANNING.md) konkretisiert die bislang offenen Adapter-/Options-
+und Validierungsdetails ohne zusätzliche Kernfelder. Das Planobjekt besitzt genau
+kind, schema_version, run_id, competition, rubric, participants, limits,
+repetitions, preparation, policy und engine. Disziplin/Assetinventar bleiben über
+die vollständige Wettbewerbsdefinition gebunden, kein zweiter Prompt im Plan.
+
+Der erste unterstützte Definitionsadapter ist ollama/ollama mit genau den sieben
+Parametern des vorhandenen Beispiels. OpenCode-Parameter werden nicht übertragen.
+Unbekannte Modell-Digests und Buildhashes sind als nicht ausführbarer Entwurf erlaubt;
+Hardware bleibt ohne Beleg unbekannt. S2 bestätigt keine Providerfähigkeit,
+Ausführbarkeit oder tatsächlich benutzte GPU. Ein angefordertes verified=true
+ohne vorhandene Beleganbindung wird ausdrücklich abgewiesen. Vollständige Regeln,
+Vertrauensgrenzen, unveränderliche PinnedPlan-API und CLI: S2_PLANNING.md.
+
+S2 implementiert lediglich die Dateninvarianten der obigen Zustände. Kein Journal,
+Scheduler, Prozessabbruch oder Resume-Worker wurde vorgezogen. Eine neue attempt_id
+ist nur eine Identität, keine Start-/Retry-Freigabe. Bekannte Plan-IDs müssen gegen
+separat gespeicherte vertrauenswürdige Hashpins oder previous verglichen werden.
+Eine globale Historie entsteht erst im späteren Archiv-/Integrationspfad.

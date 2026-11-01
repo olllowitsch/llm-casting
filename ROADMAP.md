@@ -1,8 +1,8 @@
 # LLM Casting Show – verbindliche Roadmap v0.3+
 
-Status: S1-Definitionsvalidatoren implementiert und lokal geprüft; unabhängige
-MCP-Prüfung und Commit-Freigabe stehen aus. Laufkoordination, Ausführung und
-Bewertung sind weiterhin geplant.
+Status: S1 und S2 implementiert und lokal geprüft; für S2 stehen unabhängige
+MCP-Prüfung und Commit-Freigabe aus. Laufkoordination, Ausführung und Bewertung
+sind weiterhin geplant.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
 Verträge: [Architektur](docs/ARCHITECTURE.md),
@@ -67,15 +67,22 @@ Lokaler Nachweis: 49 neue S1-Tests und alle 61 bisherigen Tests bestanden
 
 ### S2 – Unveränderlicher Laufplan und portables Ergebnis
 
-- [ ] Abgeschlossen
+- [x] Abgeschlossen
 - Ziel: vollständig aufgelöste Modellauswahl und Parameter vor jedem Start.
-- Komponenten: run_plan/result/execution-Verträge, reine Planungs- und Serialisierungs-
-  funktionen; private Zielkonfiguration getrennt von portablen Objekten.
+- Komponenten: planning.py, reine Planungs-/Validierungs-/Serialisierungsfunktionen,
+  atomarer Einzeldatei-Export und Golden-Fixtures unter tests/fixtures/planning;
+  private Zielkonfiguration getrennt von portablen Objekten.
 - Akzeptanz: Plan-, Prompt-/Asset-/Rubricbindung, Teilnehmer-/Versuchsidentitäten,
   Limits und Capability-Prüfung; Konsole/Datei nutzen dieselben Objekte.
 - Tests: Hashfixtures, Modell-/Parameterdrift, fehlende Hardware, Einheiten,
   Status-/Fortschrittsinvarianten, Standalone-/Integrations-JSON-Roundtrip.
 - Abhängigkeiten: S1. Der Dry-Run führt keinerlei Adapterarbeit aus.
+
+Lokaler Nachweis: 55 unabhängige S2-Tests plus alle 110 bisherigen Tests bestanden
+(165/165, keine Skips). Dokumentation: [S2_PLANNING.md](docs/S2_PLANNING.md).
+Alle bestehenden Vertragsbeispiele bleiben gültig; keine Modell-/Agenten-/Cloud-
+oder Datenbankaufrufe. Workspace-/Artefaktübernahme, Isolation und Journal bleiben
+in S3 ausdrücklich offen.
 
 ### S3 – Workspace, Artefaktarchiv und Isolationsgrenze
 

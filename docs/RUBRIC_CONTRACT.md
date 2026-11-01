@@ -209,3 +209,9 @@ nicht unmarkiert in dieselbe Rangliste mischen.
 Pflichttests: Gewichte/Maxima/Grenzen, exakte Rundung, fehlend versus null Punkte,
 fehlendes Pflichtgate, Jury überstimmt Test nicht, manipulierte Evidenz, ungültige
 Juryantwort, unabhängige Identität und Neubewertung ohne Änderung des Originals.
+
+
+S2 kann vorhandene Zeugnisse als strukturierte, hashgebundene Referenzen lesen;
+konkrete Feldformen beschreibt [S2_PLANNING.md](S2_PLANNING.md). Dabei werden keine
+Punkte oder Noten berechnet, keine Tests und keine Jury ausgeführt. Die fachliche
+Bewertung und tatsächliche Evidenzprüfung bleiben Schritt S5.

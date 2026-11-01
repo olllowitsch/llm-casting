@@ -502,3 +502,27 @@ mit einer vertrauenswürdigen bisherigen Definition angeben. Es führt keine
 Modell-, Agenten- oder Testadapteraufrufe durch. API, Limits, Fehlercodes und
 negative Beispiele: [S1-Validierung](docs/S1_VALIDATION.md).
 Weitere Entwicklung: [ROADMAP.md](ROADMAP.md).
+
+
+## S2: lokal planen und portable Ergebnisse prüfen
+
+planning.py ergänzt eine reine Offline-Planung mit gebundenen S1-Definitionen,
+unveränderlichem PinnedPlan und versionierten Result-/Executionobjekten.
+Keine Modelle, Coding-Agenten, Unterprozesse, Dienste oder Netzwerkzugriffe.
+Die bisherigen vier CLIs bleiben unverändert.
+
+```sh
+python3 planning.py create-plan --dry-run \
+  --competition tests/fixtures/definitions/valid/competition.json \
+  --rubric tests/fixtures/definitions/valid/rubric.json \
+  --assets tests/fixtures/definitions/valid/assets \
+  --config tests/fixtures/planning/config.json
+
+python3 planning.py hash tests/fixtures/planning/run-plan.json
+```
+
+create-plan liefert kanonisches JSON auf stdout. validate-plan, initial-result
+und validate-result sowie optionale --output-/--emit-json-/Hashpin-Argumente
+sind in [S2_PLANNING.md](docs/S2_PLANNING.md) beschrieben. Alle Dateien in
+tests/fixtures/planning sind synthetische Vertrags-/Serialisierungsbeispiele,
+keine echten Benchmarkresultate. S3 bleibt der nächste offene Schritt.

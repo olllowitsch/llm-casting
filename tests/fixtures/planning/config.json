@@ -1,0 +1,51 @@
+{
+  "run_id": "22222222-2222-4222-8222-222222222222",
+  "participants": [
+    {
+      "participant_id": "33333333-3333-4333-8333-333333333333",
+      "execution_adapter": "ollama",
+      "adapter_version": "planned-v1",
+      "provider": "ollama",
+      "model": {
+        "name": "example-model",
+        "revision_digest": null
+      },
+      "parameters": {
+        "threads": 4,
+        "gpu_mode": "cpu_only",
+        "num_ctx": 16384,
+        "think": false,
+        "num_predict": 64,
+        "seed": 42,
+        "temperature": "0"
+      },
+      "hardware": {
+        "profile_id": null,
+        "profile_revision": null,
+        "verified": false
+      }
+    }
+  ],
+  "limits": {
+    "request_timeout_seconds": 300,
+    "attempt_deadline_seconds": 600,
+    "run_deadline_seconds": 1200
+  },
+  "repetitions": 1,
+  "preparation": {
+    "unload_before": true,
+    "preload": true,
+    "warmup_count": 1
+  },
+  "policy": {
+    "max_asset_bytes": 10485760,
+    "max_artifact_bytes": 104857600,
+    "max_files": 1000,
+    "network_allowed": false,
+    "isolation_profile": "inference_only"
+  },
+  "engine": {
+    "version": "planned-v0.3",
+    "source_sha256": null
+  }
+}
