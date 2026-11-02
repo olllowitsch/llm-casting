@@ -1,7 +1,7 @@
 # Wettbewerbslauf – JSON-Vertrag v1 (Ziel v0.3+)
 
 Verbindlicher Vertrag; [S2-Planung/Validierung](S2_PLANNING.md) ist implementiert,
-noch kein neuer ausführender Runner. [Architektur](ARCHITECTURE.md),
+S4-Performance-Koordination ist separat implementiert: [S4](S4_OLLAMA_ADAPTER.md). [Architektur](ARCHITECTURE.md),
 [Wettbewerb](COMPETITION_CONTRACT.md), [Ergebnis](RESULT_CONTRACT.md),
 [Roadmap](../ROADMAP.md). Hash-/JSON-Regeln gelten wie im Wettbewerbsvertrag.
 
@@ -232,5 +232,5 @@ S3 ergänzt die getrennte Workspace-/Artefakt-/Journalpersistenz ohne Änderung 
 S2-Planfelder oder Statusbedeutungen. Workspace-Zustände sind Speicherzustände,
 keine Execution-Belege. S3 startet keine Prozesse und kann keinen Stillstand
 bestätigen; uncertain wird nicht automatisch wiederholt. Das initiale Result im
-privaten Bundle bleibt geplant. Ausführung und laufende Resultprojektion folgen
-in S4; reale Coding-Isolation bleibt vor einem Agentenstart zwingend.
+privaten Bundle bleibt geplant. Ausführung und Resultprojektion beschreibt die separat implementierte
+S4-Schicht; reale Coding-Isolation bleibt vor einem Agentenstart zwingend.

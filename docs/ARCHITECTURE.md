@@ -3,7 +3,8 @@
 Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren und reine S2-Plan-/
 Ergebnisvalidierung sowie lokale Workspace-/Artefaktpersistenz sind implementiert
 ([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md), [S3](S3_WORKSPACES.md)).
-Ausführungsengine und Bewertung sind noch geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
+S4 ergänzt die sequenzielle Performance-Koordination über einen Ollama-Adapter
+([S4](S4_OLLAMA_ADAPTER.md)); Coding-Ausführung und Bewertung sind noch geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
 ## Bestehender Stand v0.2.0
@@ -161,3 +162,21 @@ und sichere Dateisystemrechte bilden die Vertrauensbasis. Getrennte Verzeichniss
 und SHA256 sind keine Sandbox oder Signatur. Die passive Isolationsprüfung meldet
 immer executable=false; tatsächliche OS-Isolation/Prozesskontrolle bleibt vor
 Coding-Agenten verpflichtend und noch unimplementiert.
+
+
+## Implementierte S4-Performance-Koordination
+
+ollama_adapter.py verbindet die unveränderten Legacy-HTTP-/Payload-/Generate-/
+Digesthelfer mit S1/S2 und dem bestehenden S3-Store. casting.py bietet die
+Standalone-CLI. Keine zweite Journal- oder Statistikengine und keine kopierte
+Legacy-Benchmarkschleife. Private Request-/Running-/Outcome-Belege werden über
+S3 dauerhaft veröffentlicht und archiviert; das portable Result bleibt das
+unveränderte S2-Schema und wird deterministisch daraus projiziert.
+
+Ausführung beschränkt sich auf sequenzielle Performance-Inferenz am expliziten
+Ollama-Endpunkt. Coding-/Prozessrechte bleiben gesperrt. Ungewisse Generierung
+führt zu interrupted/uncertain und blockiert Resume sowie nächste Requests;
+/api/ps wird nicht als Stillstandsnachweis verwendet. Bestätigte Abschlüsse
+werden unverändert erhalten. Getestet ausschließlich mit Fake-API, keine reale
+Inferenzabnahme. Betriebsannahmen, Instanz-Transportbrücke, Build-/Digestbindung
+und noch fehlende unabhängige Serverruhebelege: S4_OLLAMA_ADAPTER.md.

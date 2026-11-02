@@ -1,8 +1,9 @@
 # LLM Casting Show – verbindliche Roadmap v0.3+
 
-Status: S1, S2 und die lokale S3-Speicherschicht implementiert und lokal geprüft.
-Für S3 stehen unabhängige MCP-Prüfung und Commit-Freigabe aus. Laufkoordination,
-Ausführung, tatsächliche OS-Isolation und Bewertung sind weiterhin geplant.
+Status: S1–S3 sowie S4-Ollama-Adapter und sequenzielle Performance-Koordination
+sind implementiert und lokal mit Fakes geprüft. Für S4 stehen unabhängige MCP-
+Prüfung und Commit-Freigabe aus. Reale Providerabnahme, Coding-Ausführung,
+tatsächliche OS-Isolation und Bewertung sind weiterhin offen.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
 Verträge: [Architektur](docs/ARCHITECTURE.md),
@@ -111,10 +112,11 @@ zwingend nachzuweisen. Der S3-Abschluss behauptet keine solche Betriebsabnahme.
 
 ### S4 – Ollama-Adapter im neuen Kern, Legacy erhalten
 
-- [ ] Abgeschlossen
+- [x] Abgeschlossen
 - Ziel: Performance als erste Standalone-Disziplin auf den neuen Vertrag abbilden.
-- Komponenten: Ollama-Adapter, Laufkoordination; bestehende Payload-/Metriklogik
-  wiederverwenden, benchmark.py-CLI und alte Archive erhalten.
+- Komponenten: ollama_adapter.py, casting.py, tests/test_ollama_adapter.py;
+  Legacy-HTTP/Generierungs-/Payload-/Digesthelfer und S3-Lock/Journal/Archiv
+  wiederverwenden, unveränderte S2-Resultprojektion und alte Archive erhalten.
 - Akzeptanz: fixierte Modelle/Parameter, sequenzielle Vorbereitung/Messung,
   Status/Abbruch/Resume; unklare serverseitige Arbeit blockiert einen neuen Start.
   Kein stiller Wechsel auf die heutige schwächere Intent-Wiederholungsregel.
@@ -122,7 +124,17 @@ zwingend nachzuweisen. Der S3-Abschluss behauptet keine solche Betriebsabnahme.
   bestätigten Serverstillstand, doppelte Requests, keine Doppelzählung und
   vollständige bestehende Benchmark-/Resume-Regression.
 - Abhängigkeiten: S3. Reale Adapterabnahme ist ein später ausdrücklich beauftragter
-  Test, nicht Bestandteil dieser Dokumentationsarbeit.
+  Test und in diesem Implementierungsauftrag ausdrücklich nicht durchgeführt.
+
+Lokaler Nachweis: 67 unabhängige S4-Tests mit gesperrten Socket-/HTTP-/Popen-
+Funktionen und Fake-Ollama; alle 243 bisherigen Tests bleiben erhalten
+(310/310, keine Skips). [S4_OLLAMA_ADAPTER.md](docs/S4_OLLAMA_ADAPTER.md) beschreibt
+API, CLI, genaue Transportklassifikation und Grenzen. Bestätigte Resultate sind
+idempotent rekonstruierbar; unklare Requests oder Speicherabschlüsse sperren
+weitere Modellarbeit. /api/ps ist kein Serverruhebeleg. Keine Force-Resume-Option,
+keine reale Inferenz, keine lokale Agenten-/Testausführung und keine Änderung
+von benchmark.py, definitions.py, planning.py, workspaces.py, report.py oder
+dashboard.py. Die tatsächliche Ollama-Abnahme und Coding-Sandbox bleiben offen.
 
 ### S5 – Deterministische Bewertung und Zeugnisse
 

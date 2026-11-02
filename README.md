@@ -551,3 +551,33 @@ S2-Plan. inspect/validate benötigen kein Ollama und ändern keine Belege.
 Ungewisse Übernahmen werden nicht automatisch wiederholt. Der Standard-
 Beispielroot casting-root und lokale Konfigurationen bleiben von Git ausgeschlossen.
 Die bisherigen Benchmark-, Resume-, Report- und Dashboard-Aufrufe bleiben erhalten.
+
+
+## S4: Wettbewerbsbasierte Ollama-Performance-Läufe
+
+`casting.py` verwendet die bestehenden S1-/S2-Verträge, S3-Persistenz und die
+Ollama-Helfer aus benchmark.py. Unterstützt werden sequenzielle Performance-Läufe
+mit gepinnten Modellen, Vorbereitung/Warmup, S2-Resulten und konservativem Resume.
+Die bisherige benchmark.py-CLI, ihre Archive und Reports bleiben unverändert.
+
+```sh
+python3 casting.py build-info
+python3 casting.py dry-run --help
+python3 casting.py run --help
+python3 casting.py inspect --help
+python3 casting.py resume --help
+python3 -m unittest discover -s tests -p test_ollama_adapter.py -v
+```
+
+Vor einem Lauf sind ein neuer S2-Plan mit realem Modelldigest sowie die von
+build-info ausgegebenen Engine-/Adapterpins erforderlich. Vorhandene Golden-
+Fixtures sind reine synthetische Vertragsbeispiele, keine Live-Providerbelege.
+validate/dry-run lesen ausschließlich lokale Daten und ändern keine privaten
+Archive. inspect rekonstruiert das portable Result ohne Ollama-Verbindung.
+
+Nach Timeout oder unbekanntem Request-/Speicherabschluss bleibt die Serie gesperrt;
+kein automatischer Retry und keine Freigabe durch /api/ps. Ein Requestende wird
+nur aus belastbaren eigenen Abschluss-/Ablehnungsbelegen abgeleitet. Coding-Agenten,
+Prozessausführung und Bewertung bleiben deaktiviert. Vollständige Aufrufe, API,
+Transport-/Serverruhegrenzen und Resultformate:
+[docs/S4_OLLAMA_ADAPTER.md](docs/S4_OLLAMA_ADAPTER.md).
