@@ -210,6 +210,20 @@ bestanden (456/456, keine Skips). Keine realen Agenten-/Modellaufrufe. Alter
 Laufzeitcode, normative Schemas, bisherige Tests/Golden-Fixtures und Archive
 bleiben unverändert; das Safety-Gate verweigert jede reale Ausführung.
 
+S6-B-Machbarkeitsprüfung: [S6_SANDBOX_FEASIBILITY.md](docs/S6_SANDBOX_FEASIBILITY.md).
+
+- [x] TST-Inventar und installierte OpenCode-v2.2.0-Version/Hilfe lesend geprüft;
+  S6-A-/Wire-Kompatibilitätsmatrix und offene Nachweise dokumentiert.
+- [x] systemd-/Cgroup-/Kernelvoraussetzungen, S3-Staginggrenze, Bedrohungsmodell
+  und vier Executorvarianten verglichen. Bevorzugt: kontrollierter Executor-Dienst
+  mit festen System-Units, minimalem Root-Dateisystem und Provider-Gateway.
+- [ ] Geschützte Installation, Coding-/Wire-Verträge, Executor/Gateway und
+  praktische OS-/Prozessbaum-/Netzwerkabnahme gemäß gesondertem Testauftrag.
+
+Dies ist ausschließlich eine dokumentierte Machbarkeitsprüfung: keine produktive
+Isolation implementiert oder abgenommen, keine Agenten-/Providerarbeit. S5 und
+S6 bleiben insgesamt offen. Bestehende 456 Tests bestanden unverändert.
+
 ## v0.4+ – Bewertung erweitern, Anzeigen und Integration
 
 ### S7 – Optionale unabhängige LLM-Jury
