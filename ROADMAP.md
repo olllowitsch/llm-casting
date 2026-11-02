@@ -242,6 +242,25 @@ Lokaler S6-C-Nachweis: 62 neue reine/synthetische Tests plus 456 bestehende Test
 bestanden (518/518, keine Skips). systemd-255-Vorlage statisch erfolgreich
 geprüft, keine Unit installiert/gestartet. Keine praktische OS-Abnahme.
 
+S6-D-Phase-1-Vorbereitung:
+[S6_ISOLATION_OPERATOR_RUNBOOK.md](docs/S6_ISOLATION_OPERATOR_RUNBOOK.md).
+
+- [x] Rein lesender Preflight mit Kollisions-/Identitäts-/Hash-/Erklärungsprüfung
+  und eigenständiger lesender Hostcollector mit gebundenen Start-/Endsamples.
+- [x] Separate systemd-255-Vorlage für llm-casting-probe, geschützte Paket-/
+  Imagebereitstellung und konkrete Operator-/Rollbackschritte dokumentiert.
+- [ ] Ausdrücklicher nachfolgender Betreiberauftrag und praktische Testinstallation.
+- [ ] Reale Netzwerk-/Ressourcenwirkung und belastbarer Prozessendnachweis;
+  fehlende oder verschwundene Cgroupbelege bleiben not_verified.
+
+S5/S6 bleiben offen. In diesem Schritt keine Phase-2-Aktion, Installation,
+Dienststeuerung, OpenCode-Ausführung oder Modellanfrage. Kein produktiver Executor.
+
+Lokaler S6-D-Nachweis: 50 neue reine/synthetische Tests plus 518 bestehende Tests
+bestanden (568/568, keine Skips). Statische systemd-255-Prüfung erfolgreich;
+lesender Preflight stoppt erwartungsgemäß vor der noch nicht freigegebenen
+Bereitstellung. Keine praktische Test-Unit gestartet oder Isolation abgenommen.
+
 ## v0.4+ – Bewertung erweitern, Anzeigen und Integration
 
 ### S7 – Optionale unabhängige LLM-Jury

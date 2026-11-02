@@ -108,3 +108,31 @@ Bericht vor dem maximal acht Sekunden lebenden Kind. Danach ist weiterhin ein
 unabhängiger Endbeleg erforderlich. Unit-Timeout/abgebrochene Ausgabe sind kein
 Erfolg. Bei Fehlern bleiben Belege erhalten; keine automatische Wiederholung,
 Bereinigung, Signalgebung oder Lockerung der Unitregeln.
+
+## S6-D – Operatorvorbereitung und unabhängige Hostaufnahmen
+
+Ergänzt sind preflight.py (standardmäßig rein lesender Planmodus) und
+host_collect.py (fest begrenzte lesende Manager-/Cgroup-/UID-Prozessabfragen).
+Sie installieren oder steuern keine Dienste. Neue S6-D-Vorlage separat unter
+unit-templates/s6d; alte S6-C-Vorlage und V1-Probeverträge bleiben unverändert.
+Zielidentität ist llm-casting-probe ohne feste UID/GID, Installationswurzeln
+/opt/llm-casting-isolation-probe und /var/lib/llm-casting-isolation-probe.
+
+```sh
+python3 tests/isolation/preflight.py --inventory
+python3 tests/isolation/preflight.py --test-id TEST-UUID --expected-bundle-sha256 BUNDLE-PIN
+python3 -m unittest discover -s tests -p test_isolation_operator.py -v
+```
+
+Preflight prüft Kollisionen, Hashbindungen und Voraussetzungen; Erklärung und
+Exit 0 sind keine Ausführungsfreigabe. phase2_execution_available bleibt false.
+Hostaufnahmen sind ein eigener Vertrag isolation_host_snapshot/version=1,
+keine Probe-Selbstauskunft oder Erweiterung des S6-C-Reports. Sie binden Profil,
+Boot, Invocation und optional extern gepinnten vorherigen Hostbericht. Fehlende/
+ersetzte Cgroups, PID-/UID-Races oder unlesbare Metadaten bleiben not_verified.
+Ressourcenwirkung und Netzwerkisolation werden dadurch nicht bestätigt.
+
+Konkrete Betreiberbefehle, Image-/Paketvertrauen, Belegkette, Abbruch-/Cleanup-
+Stopps und noch fehlende Praxistests:
+[S6_ISOLATION_OPERATOR_RUNBOOK.md](../../docs/S6_ISOLATION_OPERATOR_RUNBOOK.md).
+In Phase 1 keine Installation oder Test-Unit starten. S5/S6 bleiben offen.
