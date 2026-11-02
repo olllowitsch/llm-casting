@@ -5,7 +5,9 @@ Ergebnisvalidierung sowie lokale Workspace-/Artefaktpersistenz sind implementier
 ([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md), [S3](S3_WORKSPACES.md)).
 S4 ergänzt die sequenzielle Performance-Koordination über einen Ollama-Adapter
 ([S4](S4_OLLAMA_ADAPTER.md)); Coding-Ausführung und vollständige Bewertung sind noch geplant; der lesende
-S5-Bewertungsteil ist in [S5_ASSESSMENT.md](S5_ASSESSMENT.md) beschrieben. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
+S5-Bewertungsteil ist in [S5_ASSESSMENT.md](S5_ASSESSMENT.md) beschrieben. S6 ergänzt
+nur ein gesperrtes Protokollsimulationsprofil ([S6](S6_OPENCODE_ADAPTER.md)).
+Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
 ## Bestehender Stand v0.2.0
@@ -54,7 +56,8 @@ an Definitionen verändern keinen bestehenden Lauf.
 ## Adapter und Ausführungsgrenze
 
 Ollama ist zunächst der Inferenzadapter für den bestehenden Performance-Fall.
-OpenCode ist ein geplanter Ausführungsadapter für Agentenarbeit. Ein OpenCode-
+OpenCode ist ein geplanter produktiver Ausführungsadapter für Agentenarbeit;
+der erste implementierte S6-Teil prüft ausschließlich lokale Fakes. Ein OpenCode-
 Teilnehmer kann Ollama als Modellprovider verwenden: Adapter und Modellprovider
 sind unterschiedliche Felder, keine automatisch zwei konkurrierenden Ausführungen.
 Es wird kein nicht geprüftes OpenCode-Protokoll oder bestimmter CLI-Schalter als
@@ -74,6 +77,16 @@ Dateisystem-/Prozess-/Ressourcenlimits und standardmäßig gesperrtes Netzwerk
 verpflichtend. Keine geerbten Secrets, freien Shell-Kommandos aus Browserdaten,
 Hostzugriffe oder automatischen Paketinstallationen. Ohne diese Voraussetzungen
 bleibt reale Agentenausführung deaktiviert; reine Definition/Planung funktioniert.
+
+opencode_adapter.py startet keine Prozesse und bietet keinen Live-Transport.
+Das explizite normalisierte Simulationsprofil ist keine Zusage zum realen
+OpenCode-Wireformat. Es bindet Prompt/Inputs, Provider/Modell und Richtlinien,
+verwendet die vorhandene S3-Persistenz und S2-Statusprojektion und sperrt reale
+Ausführung ohne Force-Bypass. Eine eigene Journalengine oder ein zweiter Scheduler
+entsteht nicht. Der derzeitige normative S1/S2-Vertrag bleibt performance/ollama;
+S6 nutzt gekennzeichnete synthetische Referenzpläne, keine umbenannten Coding-
+Ausführungen. Coding-Profile, Binary-/Provider-/Prozessbaumbelege und OS-Isolation
+sind spätere Abnahmevoraussetzungen. S5 und S6 bleiben insgesamt offen.
 
 ## Bewertung und Referenzen
 

@@ -4,7 +4,8 @@ Status: S1–S3 sowie S4-Ollama-Adapter und sequenzielle Performance-Koordinatio
 sind implementiert und lokal mit Fakes geprüft (310 bestehende Tests). Reale
 Providerabnahme, Coding-Ausführung, tatsächliche OS-Isolation und die vollständige
 Bewertung sind weiterhin offen. S5 ergänzt ausschließlich die belegbasierte
-Offline-Teilbewertung. S10 plant die eigenständige LLM Casting Show Web-App,
+Offline-Teilbewertung; S6 ergänzt das gesperrte lokale Protokollsimulationsprofil.
+S10 plant die eigenständige LLM Casting Show Web-App,
 S11 ausschließlich deren optionalen dicomat-Adapter; beides ist nicht implementiert.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
@@ -185,6 +186,29 @@ hiermit nicht freigegeben; S7-Jury und S8-Codex bleiben eigenständige spätere 
   isolation, Zeitbudget, verbliebene Kinder und verlorene Abschlussbestätigung.
 - Abhängigkeiten: S5 und konkret abgenommene Isolation aus S3; OpenCode-
   Machbarkeitsprüfung. Reale Agenten nur nach gesondertem Ausführungsauftrag.
+
+Implementierter erster Teil: [S6_OPENCODE_ADAPTER.md](docs/S6_OPENCODE_ADAPTER.md),
+opencode_adapter.py und tests/test_opencode_adapter.py.
+
+- [x] Offizielle CLI-/Config-/Permission-/Providerdokumentation recherchiert;
+  dokumentierte Annahmen von lokal ungeprüfter Binary-/Wire-Kompatibilität getrennt.
+- [x] Explizites normalisiertes Fake-Profil, Provider-/Modell-/Prompt-/Input-/
+  Planbindung, Tool-/Netzwerk-/Ressourcenvertrag; reale Ausführung immer gesperrt.
+- [x] Vorhandene S3-Persistenz und S2-Statusprojektion für ausdrücklich synthetische
+  Referenzpläne; konservative Intent-/Timeout-/Abbruch-/Resume- und Idempotenztests.
+- [ ] Versioniertes produktives Coding-/OpenCode-Planprofil; S1/S2-v1 bleiben erhalten.
+- [ ] OpenCode-Wire-Decoder und konkrete Binary-/Provider-/Modellabnahme.
+- [ ] Nachgewiesener OS-Executor, Ressourcenlimits, Prozessbaumende und reale
+  Artefaktübernahme; keine Installation oder produktive Workspacefreigabe erfolgt.
+
+S6 bleibt insgesamt offen. Das lokale Profil ist kein OpenCode-Wireformat und
+keine Coding-Planfreigabe. S5 bleibt ebenfalls offen; fachliche Rubrics und
+isolierte Testausführung sind weiterhin nicht abgenommen.
+
+Lokaler Nachweis: 68 neue S6-Fake-/Vertragstests und alle 388 bisherigen Tests
+bestanden (456/456, keine Skips). Keine realen Agenten-/Modellaufrufe. Alter
+Laufzeitcode, normative Schemas, bisherige Tests/Golden-Fixtures und Archive
+bleiben unverändert; das Safety-Gate verweigert jede reale Ausführung.
 
 ## v0.4+ – Bewertung erweitern, Anzeigen und Integration
 

@@ -637,3 +637,22 @@ bleiben offen; S5 ist deshalb nicht vollständig abgehakt.
 API, Beispiele, Beleg-/Persistenzgrenzen und Wiederanlauf:
 [docs/S5_ASSESSMENT.md](docs/S5_ASSESSMENT.md). Die bestehende Drei-Projekt-
 Architektur und alle bisherigen CLIs bleiben unverändert.
+
+## S6: OpenCode-Protokollsimulation – Teilumfang
+
+`opencode_adapter.py` ergänzt Provider-/Prompt-/Input-/Planbindung, ein strikt
+versioniertes lokales Fixture-Profil und Fake-Prozessausgänge über vorhandene
+S3-Persistenz und S2-Statusprojektion. Kein zweiter Scheduler. Reale Ausführung
+ist immer gesperrt, auch mit force/unsafe/enable oder behaupteter Isolation.
+
+```sh
+python3 -m unittest discover -s tests -p test_opencode_adapter.py -v
+```
+
+Der normalisierte Fake-Vertrag ist noch kein verifiziertes OpenCode-Wireformat.
+Synthetische Referenzpläne und Ergebnisse sind ausdrücklich simulation_only;
+keine echten Messwerte oder Coding-Planfreigabe. Produktive Coding-Profile,
+nachgewiesene Binary-/Provideridentität und OS-Isolation/Prozessbaumkontrolle
+bleiben offen. S5 und S6 sind insgesamt weiterhin nicht abgenommen.
+API, Protokollrecherche, Status-/Resume-Regeln und zukünftiger Executorvertrag:
+[docs/S6_OPENCODE_ADAPTER.md](docs/S6_OPENCODE_ADAPTER.md).
