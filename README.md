@@ -612,3 +612,28 @@ nur aus belastbaren eigenen Abschluss-/Ablehnungsbelegen abgeleitet. Coding-Agen
 Prozessausführung und Bewertung bleiben deaktiviert. Vollständige Aufrufe, API,
 Transport-/Serverruhegrenzen und Resultformate:
 [docs/S4_OLLAMA_ADAPTER.md](docs/S4_OLLAMA_ADAPTER.md).
+
+
+## S5: Deterministische Offline-Bewertung – Teilumfang
+
+`assessment.py` bewertet verifizierte S4-Performance-Belege ohne Netzwerk,
+Modell-/Agentenarbeit oder Testcodeausführung. Implementiert sind die bestehende
+exakte Rubric-Formel, Pflichtgates und unveränderliche S2-Zeugnisse mit Idempotenz
+und Neubewertung. Originalarchive werden nicht verändert; ein getrennter privater
+S3-Primitivstore hält die Zeugnisse und Bewertungsgrundlagen.
+
+```sh
+python3 assessment.py --help
+python3 -m unittest discover -s tests -p test_assessment.py -v
+```
+
+Punkte benötigen ausdrücklich rubricgebundene numerische Regeln; Freitextanker
+werden nicht interpretiert. Fehlende/nicht anwendbare Kategorien bleiben missing,
+unbekannte Gates incomplete, fehlgeschlagene Pflichtgates failed unabhängig von
+anderen Punkten. Der Standardadapter prüft nur bestehende performance_checks-
+Metadaten. Tatsächliche isolierte Tests und eine produktiv freigegebene Rubric
+bleiben offen; S5 ist deshalb nicht vollständig abgehakt.
+
+API, Beispiele, Beleg-/Persistenzgrenzen und Wiederanlauf:
+[docs/S5_ASSESSMENT.md](docs/S5_ASSESSMENT.md). Die bestehende Drei-Projekt-
+Architektur und alle bisherigen CLIs bleiben unverändert.

@@ -1,0 +1,10 @@
+[
+  {"weights":[7000,3000],"maxima":[10,10],"points":["10","10"],"expected":"100"},
+  {"weights":[7000,3000],"maxima":[10,10],"points":["5","10"],"expected":"65"},
+  {"weights":[1000,9000],"maxima":[100,10],"points":["50","10"],"expected":"95"},
+  {"weights":[7000,3000],"maxima":[3,3],"points":["1","1"],"expected":"33.333333"},
+  {"weights":[7000,3000],"maxima":[10,10],"points":["0.00000005","0.00000005"],"expected":"0.000001"},
+  {"weights":[7000,3000],"maxima":[10,10],"points":["0.000000049","0.000000049"],"expected":"0"},
+  {"weights":[7000,3000],"maxima":[10,10],"points":["9.999999999","10"],"expected":"100"},
+  {"weights":[7000,3000],"maxima":[10,10],"points":[null,"10"],"expected":null}
+]

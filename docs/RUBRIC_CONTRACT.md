@@ -1,7 +1,8 @@
 # Rubric und Zeugnis – JSON-Vertrag v1 (Ziel v0.3+)
 
 Verbindlicher Vertrag v1; [S1-Definitionsvalidierung](S1_VALIDATION.md) ist
-implementiert, noch keine Bewertungs- oder Testausführungsimplementierung.
+implementiert. [S5](S5_ASSESSMENT.md) ergänzt die belegbasierte Offline-Teilbewertung;
+tatsächliche isolierte Testausführung und vollständige S5-Abnahme bleiben offen.
 Eine Rubric gehört zu genau einer Disziplin. [Architektur](ARCHITECTURE.md),
 [Wettbewerb](COMPETITION_CONTRACT.md), [Ergebnis](RESULT_CONTRACT.md),
 [Roadmap](../ROADMAP.md). Gemeinsame Hash-/JSON-Regeln wie im Wettbewerbsvertrag.

@@ -2,8 +2,9 @@
 
 Status: S1–S3 sowie S4-Ollama-Adapter und sequenzielle Performance-Koordination
 sind implementiert und lokal mit Fakes geprüft (310 bestehende Tests). Reale
-Providerabnahme, Coding-Ausführung, tatsächliche OS-Isolation und Bewertung
-sind weiterhin offen. S10 plant die eigenständige LLM Casting Show Web-App,
+Providerabnahme, Coding-Ausführung, tatsächliche OS-Isolation und die vollständige
+Bewertung sind weiterhin offen. S5 ergänzt ausschließlich die belegbasierte
+Offline-Teilbewertung. S10 plant die eigenständige LLM Casting Show Web-App,
 S11 ausschließlich deren optionalen dicomat-Adapter; beides ist nicht implementiert.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
@@ -151,6 +152,25 @@ dashboard.py. Die tatsächliche Ollama-Abnahme und Coding-Sandbox bleiben offen.
 - Tests: Scoreformel/Rundung, fehlende Werte, Pflichtgatepriorität, Provenienz,
   Testtimeout, manipulierte Artefakte und wiederholte Neubewertung.
 - Abhängigkeiten: S4; erste fachliche Rubric und Testpaket separat freigeben.
+
+Implementierter S5-Teilumfang: [S5_ASSESSMENT.md](docs/S5_ASSESSMENT.md),
+assessment.py, tests/test_assessment.py und eigene numerische Golden-Vektoren.
+
+- [x] Verifizierte S4-Quellen/Artefakte und Performance-Metadatenchecks ohne Netz.
+- [x] Exakte Scoreformel, Pflichtgatevorrang und explizite rubricgebundene Punkteregeln.
+- [x] Unveränderliche S2-Zeugnisse, getrennte S3-Primitivpersistenz, Idempotenz und
+  Neubewertung ohne Änderung der Originale; keine zweite Journalengine.
+- [ ] Tatsächliche isolierte Testausführung und produktive Executorabnahme.
+- [ ] Fachliche Freigabe einer produktiven Rubric/Testpaket-/Punktezuordnung.
+
+Lokaler Nachweis: 78 eigenständige S5-Tests und alle 310 bisherigen Tests bestanden
+(388/388, keine Skips), ausschließlich mit synthetischen Quellen/Fake-Ollama.
+S1–S4-Laufzeitcode, Schemas, alte Golden-Fixtures und Archive bleiben unverändert.
+
+S5 bleibt als Gesamtschritt offen. Freitextanker definieren keine allgemeine
+maschinenlesbare Punktefunktion: ohne explizite Regel bleibt eine Kategorie
+missing. Registry/Fake- bzw. Metadatenadapter sind keine OS-Sandbox. S6 wird
+hiermit nicht freigegeben; S7-Jury und S8-Codex bleiben eigenständige spätere Schritte.
 
 ### S6 – OpenCode-Ausführungsadapter
 

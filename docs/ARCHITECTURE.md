@@ -4,7 +4,8 @@ Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren und reine S2-Plan-/
 Ergebnisvalidierung sowie lokale Workspace-/Artefaktpersistenz sind implementiert
 ([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md), [S3](S3_WORKSPACES.md)).
 S4 ergänzt die sequenzielle Performance-Koordination über einen Ollama-Adapter
-([S4](S4_OLLAMA_ADAPTER.md)); Coding-Ausführung und Bewertung sind noch geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
+([S4](S4_OLLAMA_ADAPTER.md)); Coding-Ausführung und vollständige Bewertung sind noch geplant; der lesende
+S5-Bewertungsteil ist in [S5_ASSESSMENT.md](S5_ASSESSMENT.md) beschrieben. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
 ## Bestehender Stand v0.2.0
@@ -209,3 +210,24 @@ führt zu interrupted/uncertain und blockiert Resume sowie nächste Requests;
 werden unverändert erhalten. Getestet ausschließlich mit Fake-API, keine reale
 Inferenzabnahme. Betriebsannahmen, Instanz-Transportbrücke, Build-/Digestbindung
 und noch fehlende unabhängige Serverruhebelege: S4_OLLAMA_ADAPTER.md.
+
+
+## S5 – implementierte belegbasierte Teilbewertung
+
+assessment.py prüft vorhandene S4-Resultsnapshots und Artefakte und erzeugt
+unveränderliche Zeugnisse im bestehenden S2-Vertrag. Die exakte Scoreformel und
+Pflichtgates sind implementiert; numerische Punktezuordnungen benötigen explizite,
+rubricgebundene Regeln. Fehlende Daten oder nicht anwendbare Kategorien werden
+nicht zu kostenlosen/null Punkten oder durch Umgewichtung kompensiert.
+
+S3-Lese-/Publikations-/Lock-/fsync-Funktionen werden für einen getrennten privaten
+Assessmentstore wiederverwendet, ohne Originalarchive oder Journale zu verändern.
+Es gibt keine zweite Journalengine. Methoden-/Rubric-/Sourcebelege liegen in einer
+privaten Speicherenveloppe; der öffentliche Assessmentkörper erhält keine Zusatzfelder.
+Neubewertung erweitert nur die separate Resultprojektion, ohne neue Modellarbeit.
+
+Die Registrierung vertrauenswürdiger Metadatenprüfer ist keine OS-Isolation.
+Untrusted Testdateien, Agenten, Jury und Cloud werden nicht ausgeführt. Produktive
+Rubricfreigabe und isolierte Executorabnahme bleiben offen; S5 ist ein Teilstand.
+Die Web-App (S10) und der optionale dicomat-Adapter (S11) bleiben separate zukünftige
+Projekte ohne Kopie der Engine-/Bewertungslogik. Details: S5_ASSESSMENT.md.
