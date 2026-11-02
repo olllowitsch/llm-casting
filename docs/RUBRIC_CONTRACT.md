@@ -175,12 +175,21 @@ nicht als unabhängiges Urteil ausgeben. Wiederholungen und Abweichungen offen
 speichern. Strukturell ungültige Antworten liefern kein Zeugnis mit erfundenen
 Punkten. Artefaktinhalt ist untrusted Input, keine Jury-Anweisung.
 
-Cloud-Codex ist eine optionale Referenz mit separater Einwilligung, Budget und
-Timeout. Sie erhält dieselbe fixierte Aufgabe und freigegebene Inputs; abweichende
-Tools oder Limits werden sichtbar dokumentiert. Sie bleibt getrennt von lokalen
-Messungen. Jury- und Cloud-Transport benötigen eine spätere Machbarkeitsprüfung;
-keine konkrete API-Verfügbarkeit wird hier vorausgesetzt. Keine Übertragung von
-Secrets, versteckten Tests oder privaten Artefakten ohne passende Datenfreigabe.
+Die optionale Cloud-Codex-Referenz in S8 beginnt mit manuellem Import vorhandener
+Codex-Ergebnisse. Der Import löst keinen Cloud-Aufruf aus, benötigt keinen API-
+Schlüssel und setzt keine zusätzlichen API-Kosten voraus. Das ist keine Zusage
+kostenloser Codex-Nutzung oder einer bestimmten Berechtigung. Aufgabe, Prompt- und
+Inputbindung, Herkunft sowie Toolabweichungen müssen belegbar sein; fehlende
+Belege bleiben unbekannt. Referenzen bleiben getrennt von lokalen Messungen und
+werden nicht automatisch zur Wahrheit oder Jury erklärt.
+
+Eine spätere OAuth-/Codex-Anbindung ist ausschließlich optional. Rechtliche und
+technische Freigabe, verfügbare Schnittstellen, Datenfreigabe sowie gegebenenfalls
+Budget/Timeout sind vor Umsetzung zu klären. Keine konkrete OpenAI-Freigabe,
+OAuth-Verfügbarkeit oder Cloud-API wird behauptet. Jurytransport ist davon
+getrennt. Keine Übertragung von Secrets, versteckten Tests oder privaten Artefakten
+ohne passende Datenfreigabe. Diese Planung verändert keine bestehenden
+Assessment-/Rubricfelder, Beispiele oder Validatoren.
 
 ## Zeugnis und nachträgliche Neubewertung
 

@@ -113,7 +113,7 @@ exportierbar nach Prüfung, keine automatische Veröffentlichung. Ein bereinigte
 Export verweist auf ausgelassene Artefakte als nicht verfügbar und behauptet
 keine erneute unabhängige Verifikation ohne die Originale.
 
-## Darstellung, Datenschutz und dicomat
+## Darstellung, Datenschutz und Web-Integration
 
 Konsole, Datei und HTML sind Projektionen desselben Ergebnisobjekts. Die Konsole
 kann Fortschritt kurz anzeigen, die portable JSON-Ausgabe bleibt maßgeblich.
@@ -122,12 +122,19 @@ Standard-HTML enthält keine Prompts, Antworten, Hostnamen, Endpoints, Zugangsda
 oder lokalen Pfade. Auch Freitextbegründungen vor Export prüfen; Escaping allein
 anonymisiert keine Daten. Eine bereinigte Ansicht ist kein zweiter Ergebnisvertrag.
 
-Dicomat importiert dasselbe JSON unverändert bezüglich fachlicher Felder;
-DB-Primärschlüssel, Standortauthentifizierung und UI-Metadaten bleiben außerhalb
-des Engineobjekts. Wiederholter Import anhand run_id, attempt_id, Hashes und
-assessment_id darf keine Doppelzählung erzeugen. Widersprüchliche Inhalte unter
-derselben unveränderlichen ID werden abgewiesen. Es wird hier kein Datenbankschema
-angelegt oder transportbezogener API-Endpunkt zugesichert.
+Die geplante eigenständige llm-casting-show-Web-App übernimmt denselben portablen
+Vertrag über ihre kontrollierte lokale Engine-Schnittstelle. Web-DB-Schlüssel,
+Zugriffsschutz und UI-Metadaten bleiben außerhalb des Engineobjekts. Wiederholter
+Import anhand run_id, attempt_id, Hashes und assessment_id darf keine Doppelzählung
+erzeugen. Widersprüchliche Inhalte unter derselben unveränderlichen ID werden
+abgewiesen; die Engine bleibt für Ausführung und Bewertung maßgeblich.
+
+Ein späterer dicomat-Adapter kommuniziert ausschließlich mit der versionierten
+HTTP-/JSON-API der Casting Show, nicht direkt mit Engine oder Datenbank. S10
+(Web-App) und S11 (optionaler Adapter) sind getrennte zukünftige Schritte.
+Schnittstellenplanung: [WEB_APP_ARCHITECTURE.md](WEB_APP_ARCHITECTURE.md).
+Diese Dokumentationsänderung ergänzt keine JSON-Felder, Schemas, DB-Tabellen
+oder implementierten HTTP-Endpunkte.
 
 ## Alte Archive, Fehler und Tests
 

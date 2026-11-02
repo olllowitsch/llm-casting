@@ -85,35 +85,62 @@ Modellunabhängigkeit allein garantiert keine objektive Beurteilung.
 Eine Cloud-Referenz liefert eine getrennt gekennzeichnete Vergleichslösung;
 sie ist weder automatisch Wahrheit noch Gewinner noch Jury. Ihre Leistung darf
 nicht als lokale Ollama-Hardwaremessung ausgegeben werden. Inhalte werden nur
-nach ausdrücklicher Freigabe übertragen. Keine automatische Cloud-Nutzung bei
-lokalen Fehlern. Neubewertung erzeugt ein neues Zeugnis auf denselben fixierten
+nach ausdrücklicher Freigabe übertragen. S8 beginnt mit manuellem Import bereits
+vorhandener Codex-Ergebnisse: keine automatischen Cloud-Aufrufe, API-Schlüsselpflicht
+oder vorausgesetzten zusätzlichen API-Kosten. OAuth-/Codex-Anbindung bleibt eine
+spätere Option mit offener rechtlicher/technischer Freigabe; keine konkrete
+OpenAI-Freigabe oder Verfügbarkeit wird behauptet. Keine automatische Cloud-Nutzung
+bei lokalen Fehlern. Neubewertung erzeugt ein neues Zeugnis auf denselben fixierten
 Artefakten, keine erneute Modellarbeit und kein Überschreiben alter Urteile.
 
-## Dicomat als getrennte Anwendung
+## Drei unabhängig versionierbare Projekte
 
-Dicomat verwaltet Wettbewerbe und Laufaufträge, persistiert den portablen Vertrag
-in PostgreSQL und stellt DataGrids, Diagramme und Historie dar. Bestehende
-Authentifizierung und Berechtigungen schützen Verwaltung, Start, Abbruch,
-Dateizugriff und Export. PostgreSQL-Schema und UI sind ausschließlich Sache der
-Integration, keine importierbaren Engine-Abhängigkeiten.
+| Projekt | Verbindliche Verantwortung | Abhängigkeiten |
+| --- | --- | --- |
+| [llm-casting](https://github.com/olllowitsch/llm-casting) | Python-Engine: Wettbewerbsdefinitionen, Pläne, Modelladapter, Workspaces/Artefakte, geplante Bewertung/Zeugnisse und portable JSON-Verträge | Keine WebUI-, dicomat- oder PostgreSQL-Abhängigkeit; CLI bleibt eigenständig |
+| [llm-casting-show](https://github.com/olllowitsch/llm-casting-show) | Geplante eigenständige Open-Source-Web-App mit Node.js/TypeScript, versionierter HTTP-/JSON-API und eigener Persistenz | Kontrollierte lokale Engine-Schnittstelle; keine dicomat-Abhängigkeit oder duplizierte Engine-/Bewertungslogik |
+| dicomat-refactor | Später optionaler Menü-/Integrationsadapter | Ausschließlich serverbasierte Kommunikation mit der Casting-Show-API; keine direkte Engine-/DB-Abhängigkeit oder zweite WebUI |
 
-Die geplante Tabstruktur lautet **Wettbewerbe / Läufe / Benchmarks / Zeugnisse**.
-Die bestehende Benchmark-Seite bleibt erhalten. Diese Struktur ist eine Vorgabe
-für die spätere Integration, keine in S1 implementierte WebUI.
+Der Webprojekt-Link bezeichnet das vorgesehene Repository; in diesem Auftrag wird
+kein Repository angelegt und keine Web-App implementiert. Die Komponenten werden
+unabhängig veröffentlicht/versioniert; Kompatibilität richtet sich nach den
+jeweiligen Schnittstellenversionen, nicht identischen Release-Nummern.
 
-Die Integration ruft dieselbe Engine auf und importiert dieselben Ergebnis-
-objekte wie Standalone. Kein kopierter Runner, keine zweite Bewertungslogik.
-Lauf-ID, Versuchs-ID, Ergebnishash und Zeugnis-ID machen Wiederholungen beim
-Import idempotent; PostgreSQL-IDs sind keine Engine-Identitäten. Browser liefern
-IDs statt Dateisystempfaden. Ein Engine-Schreibzugriff pro Lauf bleibt maßgeblich;
-ein Datenbankstatus darf ein noch laufendes Engine-Verfahren nicht duplizieren.
+## Eigenständige Webanwendung und optionaler Adapter
 
-Der spätere Start-/Status-/Abbruchtransport ist ein schmales zu prüfendes
-Integrationsdetail. Kein neuer HTTP-Dienst oder freier Remote-Shell-Endpunkt wird
-mit dieser Architektur festgelegt. Ein beschränkter Prozess-/CLI-Transport ist
-der bevorzugte erste Integrationskandidat. Bis zur gesonderten Integrations-
-umsetzung bleibt ein vorhandener read-only Exportweg davon unberührt. In diesem
-Auftrag wird dicomat weder geprüft noch verändert; keine Behauptung seiner Abnahme.
+S10 plant **LLM Casting Show** als vollständig ohne dicomat installierbare Anwendung
+mit vier Haupttabs: **Wettbewerbe / Läufe / Benchmarks / Zeugnisse**. Vorgesehen
+sind ein eigener llm-casting-show.service und ein konfigurierbarer HTTP-Port,
+beispielsweise 8090. SQLite ist das vorgesehene einfache Standalone-Backend,
+PostgreSQL kann später optional folgen. Framework, DB-Bibliothek und konkretes
+Engine-Prozessprotokoll sind noch nicht entschieden. Die Web-App besitzt ihre
+Persistenz und Zugriffskontrolle selbst; dicomat stellt diese nicht voraus.
+
+Geplante Betriebsarchitektur, noch nicht implementiert:
+
+```text
+Browser -> llm-casting-show.service (Node.js, HTTP-Port konfigurierbar)
+        -> kontrollierte lokale Engine-Schnittstelle
+        -> llm-casting (Python) -> Ollama / später optionale Agenten
+
+Optional: dicomat-Server -> versionierte Casting-Show-HTTP-API
+```
+
+Die öffentliche HTTP-API bedient Browser und spätere Integrationsclients. Die
+interne Engine-Schnittstelle steuert ausschließlich unterstützte Engine-Aktionen
+mit geprüften JSON-Verträgen. Kein freier Remote-Shell-Endpunkt, keine Browser-
+Dateipfade oder direkte Datenbankverbindung aus dicomat. Webserver und Engine
+verwechseln HTTP-Auftragsannahme nicht mit bestätigter Ausführung/Beendigung.
+S4-Uncertain-Sperren bleiben auch bei Webserver-Neustart/Resume maßgeblich.
+
+S11 ergänzt ausschließlich einen optionalen dicomat-Adapter. Die bestehende
+dicomat-Benchmark-Seite bleibt bis zu einem ausdrücklich freigegebenen Ablösungs-
+oder Weiterleitungsplan erhalten; kein stilles Entfernen ihrer Verweise/Historie.
+Ein bestehender read-only Exportweg wird in diesem Auftrag nicht geändert.
+
+Verbindliche Zuständigkeitsgrenzen und als Entwurf markierte API-/Betriebsplanung:
+[WEB_APP_ARCHITECTURE.md](WEB_APP_ARCHITECTURE.md). Es sind keine neuen HTTP-
+Endpunkte, Dienste, Datenbanktabellen oder Integrationsfunktionen implementiert.
 
 ## Kompatibilität und Sicherheit
 
@@ -140,7 +167,9 @@ explizite Betreiberentscheidungen.
 [Result](RESULT_CONTRACT.md) und [Rubric](RUBRIC_CONTRACT.md) definieren gemeinsam
 das Ziel. Nur [ROADMAP.md](../ROADMAP.md) führt den Arbeitsfortschritt.
 Offen sind die konkrete OpenCode-Anbindung, Isolationsimplementierung,
-Cloud-/Juryprovider, fachliche Rubrics/Notengrenzen und der dicomat-Transport.
+Juryprovider, manuelle Codex-Importbelege und spätere OAuth-/Codex-Freigaben,
+fachliche Rubrics/Notengrenzen sowie Web-Framework, DB-Bibliothek, HTTP-/lokales
+Engine-Protokoll (S10) und der optionale dicomat-API-Adapter (S11).
 Diese Details dürfen die festgelegte Unabhängigkeit, gemeinsame Promptversion,
 Unveränderlichkeit und Sicherheitsgrenzen nicht aufweichen.
 

@@ -1,10 +1,41 @@
-# LLM Casting – Phase 1
+# LLM Casting – Python-Engine
 
 Eigenständiger, sequenzieller Ollama-Benchmark mit Python-Standardbibliothek.
 Keine Installation von Python-Paketen, keine Systemänderungen und keine automatischen
 Modelldownloads. Voraussetzung: Python **3.10 oder neuer** sowie bereits auf dem
 Ollama-Server installierte Modelle. Das Smoke-Szenario verwendet `phi4-mini:3.8b`; dieses Modell muss bereits
 auf dem Ollama-Server vorhanden sein.
+
+## Projekte und Zielarchitektur
+
+Dieses Repository enthält die unabhängige Python-Engine **llm-casting**. S1–S4
+sind implementiert; bestehende CLIs, JSON-Verträge und Archive bleiben unverändert.
+Die folgenden Web-/Integrationskomponenten sind geplant, noch nicht implementiert:
+
+| Projekt | Rolle |
+| --- | --- |
+| [llm-casting](https://github.com/olllowitsch/llm-casting) | Engine für Definitionen, Laufpläne, Modelladapter, Workspaces/Artefakte und künftig Bewertung/Zeugnisse; keine WebUI-Abhängigkeit |
+| [llm-casting-show](https://github.com/olllowitsch/llm-casting-show) | Vorgesehenes eigenständiges Open-Source-Webprojekt mit Node.js/TypeScript, eigener versionierter HTTP-/JSON-API und Persistenz; vollständig ohne dicomat nutzbar |
+| dicomat-refactor | Später optionaler Adapter zur Casting-Show-API; keine direkte Engine-/DB-Anbindung oder zweite WebUI |
+
+S10 plant die Web-App mit **Wettbewerbe / Läufe / Benchmarks / Zeugnisse**, eigenem
+llm-casting-show.service und konfigurierbarem Port (Beispiel 8090). SQLite ist als
+einfaches Standalone-Backend vorgesehen, PostgreSQL später optional. Framework,
+DB-Bibliothek und internes Engine-Protokoll werden erst vor Implementierung gewählt.
+Der Webprojekt-Link ist ein vorgesehenes Ziel; hier wird kein Repository erstellt.
+S11 plant ausschließlich den optionalen dicomat-Adapter einschließlich einer
+freigegebenen Ablösung/Weiterleitung der bestehenden dicomat-Benchmark-Seite.
+
+Die optionale Codex-Referenz in S8 beginnt mit manuellem Ergebnisimport: keine
+automatischen Cloud-Aufrufe, API-Schlüsselpflicht oder vorausgesetzten zusätzlichen
+API-Kosten. Eine spätere OAuth-/Codex-Anbindung bedarf noch rechtlicher und
+technischer Klärung; keine konkrete OpenAI-Freigabe wird behauptet.
+
+Verbindliche Planung: [ROADMAP.md](ROADMAP.md),
+[ARCHITECTURE.md](docs/ARCHITECTURE.md) und
+[WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md). Geplante HTTP-/interne
+Schnittstellen sind dort ausdrücklich Entwürfe; der bestehende Engine-Betrieb
+benötigt weiterhin weder Node.js noch dicomat oder eine Datenbank.
 
 ## Installation
 

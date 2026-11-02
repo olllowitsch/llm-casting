@@ -1,15 +1,18 @@
 # LLM Casting Show – verbindliche Roadmap v0.3+
 
 Status: S1–S3 sowie S4-Ollama-Adapter und sequenzielle Performance-Koordination
-sind implementiert und lokal mit Fakes geprüft. Für S4 stehen unabhängige MCP-
-Prüfung und Commit-Freigabe aus. Reale Providerabnahme, Coding-Ausführung,
-tatsächliche OS-Isolation und Bewertung sind weiterhin offen.
+sind implementiert und lokal mit Fakes geprüft (310 bestehende Tests). Reale
+Providerabnahme, Coding-Ausführung, tatsächliche OS-Isolation und Bewertung
+sind weiterhin offen. S10 plant die eigenständige LLM Casting Show Web-App,
+S11 ausschließlich deren optionalen dicomat-Adapter; beides ist nicht implementiert.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
 Verträge: [Architektur](docs/ARCHITECTURE.md),
 [Wettbewerb](docs/COMPETITION_CONTRACT.md), [Lauf](docs/RUN_CONTRACT.md),
 [Ergebnis](docs/RESULT_CONTRACT.md), [Rubric](docs/RUBRIC_CONTRACT.md).
-Diese Datei ist die maßgebliche Entwicklungsreihenfolge. `[x]` bedeutet im
+Die [Web-App-Zielarchitektur](docs/WEB_APP_ARCHITECTURE.md) trennt drei unabhängig
+versionierbare Projekte: Python-Engine, eigenständige Web-App und optionalen
+dicomat-Adapter. Diese Datei ist die maßgebliche Entwicklungsreihenfolge. `[x]` bedeutet im
 bestehenden Code implementiert, `[ ]` noch nicht als Schritt abgenommen.
 Jeder offene Schritt wird einzeln abgeschlossen; keine parallele zweite Engine.
 Zielversionen sind Planungsgrenzen, keine Termine oder Zusagen zur Provider-API.
@@ -180,15 +183,22 @@ dashboard.py. Die tatsächliche Ollama-Abnahme und Coding-Sandbox bleiben offen.
 ### S8 – Optionale Cloud-Codex-Referenz
 
 - [ ] Abgeschlossen
-- Ziel: getrennt gekennzeichnete Referenzlösung auf derselben Aufgabe.
-- Komponenten: optionaler Referenzadapter, Datenfreigabe-/Budgetkonfiguration.
-- Akzeptanz: keine Core-Abhängigkeit oder automatischer Fallback; gleicher Prompt/
-  Input, dokumentierte Toolabweichungen, separate Messklasse und Provenienz;
-  Referenz nicht automatisch als Wahrheit/Jury oder Wettbewerbssieger behandeln.
-- Tests: deaktiviert bedeutet null Aufrufe; nur freigegebene Daten, Budget/Timeout,
-  Fehler ohne Lokalabbruch, keine Vermischung lokaler Hardwarestatistik.
-- Abhängigkeiten: S7; verfügbare Schnittstelle und Nutzungsbedingungen vor einer
-  Implementierung prüfen. Keine bestimmte Cloud-API wird hier zugesichert.
+- Ziel: getrennt gekennzeichnete Referenzlösung auf derselben Aufgabe, zunächst
+  durch manuellen Import bereits vorhandener Codex-Ergebnisse.
+- Komponenten: optionaler Importadapter, Herkunfts-/Integritätsprüfung und
+  Datenfreigabe; spätere OAuth-/Codex-Anbindung ausschließlich als Ausbauoption.
+- Akzeptanz: gleicher Prompt/Input, dokumentierte Toolabweichungen, separate
+  Messklasse und Provenienz; unbekannte Belege sichtbar markieren. Keine
+  Core-Abhängigkeit, automatischen Cloud-Aufrufe, Fallbacks oder API-Schlüsselpflicht.
+  Keine zusätzlichen API-Kosten voraussetzen; keine Aussage über kostenlose
+  Codex-Nutzung. Referenz ist nicht automatisch Wahrheit/Jury oder Gewinner.
+- Tests: manueller Import ohne Netzwerk/Schlüssel; ungültige/fehlende Belege,
+  Prompt-/Versionsabweichungen und wiederholter Import; kein Überschreiben und
+  keine Vermischung mit lokalen Hardwaremessungen. Eine deaktivierte spätere
+  Cloud-Anbindung erzeugt null Aufrufe; Budget-/Timeouttests erst für diese Option.
+- Abhängigkeiten: S7; Importformat und zulässige Herkunftsbelege festlegen.
+  Rechtliche/technische Freigabe einer späteren OAuth-/Codex-Integration ist offen;
+  keine konkrete OpenAI-Freigabe, Schnittstellenverfügbarkeit oder API zugesichert.
 
 ### S9 – Neue Ergebnisprojektionen und Legacy-Leser
 
@@ -203,21 +213,54 @@ dashboard.py. Die tatsächliche Ollama-Abnahme und Coding-Sandbox bleiben offen.
   keine Netzwerkzugriffe und bytegenau unveränderte Eingabearchive.
 - Abhängigkeiten: S8. Keine historischen Scores oder Promptversionen erfinden.
 
-### S10 – Dicomat-Integration als eigener Auftrag
+### S10 – Eigenständige LLM Casting Show Web-App
 
 - [ ] Abgeschlossen
-- Ziel: Verwaltung/Steuerung/Persistenz und UI ergänzen, ohne die Engine zu kopieren.
-- Komponenten: ausschließlich künftig im dicomat-Projekt zu entwickelnder Adapter,
-  PostgreSQL-Persistenz, bestehende Authentifizierung, DataGrids/Diagramme/Historie.
-  Vorgesehene Tabs: Wettbewerbe / Läufe / Benchmarks / Zeugnisse. Die bestehende
-  Benchmark-Seite bleibt erhalten; keine UI-Implementierung in S1.
-- Akzeptanz: Wettbewerb anlegen/versionieren, Lauf starten/Status/Abbruch/Resume
-  mit denselben IDs und JSON-Verträgen; Engine bleibt standalone nutzbar;
-  keine Browserpfade/freien Shell-Kommandos, keine zweite Bewertungslogik.
-- Tests: Authentifizierung/Berechtigungen, Start-/Import-Idempotenz, Lockkonflikte,
-  End-to-End mit Fake-Engine, JSON-Roundtrip und bestehende dicomat-Regression.
-- Abhängigkeiten: S9; eigener Integrationsauftrag, Transport-/Deploymentvertrag
-  und gesonderte Datenbankmigrationsfreigabe. Keine dicomat-Änderung hier.
+- Ziel: eigenständig installierbare und ohne dicomat benutzbare Open-Source-Web-App
+  im vorgesehenen Repository github.com/olllowitsch/llm-casting-show.
+- Komponenten: Node.js-/TypeScript-Runtime, eigener llm-casting-show.service,
+  konfigurierbarer HTTP-Port (Beispiel 8090), versionierte HTTP-/JSON-API,
+  eigene Persistenz mit vorgesehenem SQLite-Backend; PostgreSQL später optional.
+  Vier Haupttabs: Wettbewerbe / Läufe / Benchmarks / Zeugnisse.
+  Kontrollierte lokale Schnittstelle zur separat versionierten Python-Engine;
+  keine duplizierte Ausführungs-/Bewertungslogik und keine dicomat-Abhängigkeit.
+- Akzeptanz: Repository und Runtime als eigener Implementierungsauftrag einrichten;
+  App ohne dicomat starten, Wettbewerbe verwalten, unterstützte Laufaktionen und
+  Archivübernahme über dieselben Engine-Verträge bereitstellen. Administrative
+  Aktionen authentifizieren/autorisieren; keine freien Browser-Kommandos/Pfade.
+  Status/Abbruch/Resume respektieren Engine-Fähigkeiten und Uncertain-Sperren.
+  Installations-, Konfigurations-, Update-, Backup- und Betriebsdokumentation
+  einschließlich Dienst/Port, Berechtigungen und API-Kompatibilität bereitstellen.
+- Tests: Runtime-/Browser-Typechecks und automatisierte API-/Persistenz-/UI-Tests;
+  vier Tabs, Standalone-Start ohne dicomat, Portkonfiguration, Authentifizierung,
+  Pfad-/Kommandomanipulation, Idempotenz und Neustartverhalten. Integration mit
+  Fake-Engine einschließlich Abbruch/unsicherem Resume sowie lesender Altarchive.
+- Abhängigkeiten: S9; eigene Framework-/Datenbankbibliotheks-/Prozessprotokoll-
+  Entscheidungen, Zugriffsschutz und Installationsvertrag vor Implementierung.
+  Siehe [WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md). HTTP-/interne
+  Schnittstellen sind Entwürfe, noch keine vorhandenen Endpunkte oder Dienste.
+
+### S11 – Optionaler dicomat-Integrationsadapter
+
+- [ ] Abgeschlossen
+- Ziel: Menüintegration in dicomat mit serverbasierter Kommunikation zur API der
+  eigenständigen Casting Show; die Anwendung bleibt vollständig ohne dicomat nutzbar.
+- Komponenten: optionaler Adapter im separat versionierten dicomat-refactor,
+  Menüverweis und kontrollierte API-Client-/Authentifizierungsanbindung.
+  Keine zweite WebUI, Enginekopie, direkte Python-Engine- oder DB-Abhängigkeit.
+- Akzeptanz: ausschließlich die versionierte Casting-Show-API verwenden; klare
+  Benutzer-/Dienstidentitäten und Berechtigungsgrenzen, keine automatischen
+  Rechteübernahmen. Keine direkten Datenbankzugriffe oder Browser-Engine-Pfade.
+  Bestehende dicomat-Benchmark-Seite bis zu einer ausdrücklich freigegebenen
+  Ablösung erhalten; Übernahme ihrer Verweise/Historie, möglicher Link bzw.
+  Weiterleitung, Ausfallverhalten und Rückfallweg vor Umstellung planen.
+- Tests: bestehende dicomat-Regression unverändert erhalten; Menü/Links,
+  API-Versionen, Authentifizierung/Autorisierung, Timeouts/erreichbare und
+  ausgefallene Casting Show, keine Abhängigkeit vom Engine-Dateisystem oder
+  Casting-Show-DB; nachweisen, dass Standalone-Betrieb ohne Adapter funktioniert.
+- Abhängigkeiten: S10 mit dokumentierter API/Auth-Grenze und eigenständigem Betrieb;
+  separater dicomat-Auftrag und Freigabe des Ablösungs-/Installationsplans.
+  Keine Änderungen oder Abnahme des dicomat-Projekts in diesem Auftrag.
 
 ## Abschluss jedes Schritts
 
@@ -236,9 +279,11 @@ Schritt ist weder Commit- noch Veröffentlichungs- oder Deploymentfreigabe.
    Ausführung bis dahin deaktiviert).
 3. Fachliche Rubrics, Testpakete, eventuell Notenschwellen und Disziplinregister
    jenseits Performance (S1/S5).
-4. Jury-/Cloudprovider, Identitätsnachweise, Datenfreigabe und Budgetierung
-   (S7/S8); optionale Integrationen ändern die Unabhängigkeit des Kerns nicht.
-5. Dicomat-Prozess-/Status-/Abbruchtransport, Persistenz und Betreiberinstallation
-   (S10). Keine transport- oder datenbankspezifischen Felder im Engine-Ergebnis.
+4. Juryprovider (S7), manuelles Codex-Importformat/Herkunftsbelege (S8) und
+   rechtliche/technische Freigabe optionaler späterer OAuth-/Codex-Anbindung.
+   Keine zusätzlichen API-Kosten, Schlüsselpflicht oder OpenAI-Freigabe voraussetzen.
+5. Web-Framework, Node-Version, DB-Bibliothek/Migrationen, HTTP-API/Auth und lokales
+   Engine-Protokoll (S10); serverbasierter dicomat-API-Adapter und Ablösung der
+   bestehenden Benchmark-Seite (S11). Keine Web-/DB-Felder im Engine-Ergebnis.
 6. Aufbewahrungsfristen, geprüfte Exportprofile und gegebenenfalls Signierung
    zusätzlich zu Hashes (S3/S9); keine automatische Veröffentlichung.
