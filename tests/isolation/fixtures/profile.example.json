@@ -1,0 +1,37 @@
+{
+  "kind": "isolation_test_profile",
+  "profile_version": 1,
+  "test_id": "55555555-5555-4555-8555-555555555555",
+  "created_at": "2026-11-02T00:00:00Z",
+  "expected": {
+    "uid": 62001,
+    "gid": 62001,
+    "unit": "llm-casting-isolation-probe@55555555-5555-4555-8555-555555555555.service",
+    "cgroup": "/system.slice/llm-casting-isolation-probe@55555555-5555-4555-8555-555555555555.service",
+    "host_mount_namespace_inode": null
+  },
+  "filesystem_policy": "synthetic-root-only-v1",
+  "network_policy": "local-fixtures-only-v1",
+  "filesystem_expected": {
+    "output_write": "allowed",
+    "reference_read": "matched",
+    "reference_write": "denied",
+    "outside_write": "denied",
+    "other_read": "denied",
+    "hardlink": "denied"
+  },
+  "network_expected": {
+    "external_ipv4": "deny",
+    "external_ipv6": "deny",
+    "dns": "deny",
+    "unix_forbidden": "deny",
+    "gateway": "allow_local_synthetic",
+    "direct_ollama": "deny"
+  },
+  "limits": {
+    "memory_max_bytes": 134217728,
+    "cpu_quota_usec_per_sec": 250000,
+    "tasks_max": 16,
+    "runtime_seconds": 5
+  }
+}

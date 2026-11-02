@@ -224,6 +224,24 @@ Dies ist ausschließlich eine dokumentierte Machbarkeitsprüfung: keine produkti
 Isolation implementiert oder abgenommen, keine Agenten-/Providerarbeit. S5 und
 S6 bleiben insgesamt offen. Bestehende 456 Tests bestanden unverändert.
 
+S6-C-Vorbereitung: [S6_ISOLATION_TEST_PLAN.md](docs/S6_ISOLATION_TEST_PLAN.md),
+eigenständiges Standardbibliotheks-Prüfpaket unter tests/isolation.
+
+- [x] Versioniertes synthetisches Profil-/Berichtsformat, konservative
+  Konsistenzprüfung und Live-Gates vor Dateiproben/fester Kindfixture vorbereitet.
+- [x] Reine Unit-/Dateitests und systemd-255-Unitvorlage ohne Installation geprüft;
+  Operatorverfahren, Stopppunkte, Beleggrenzen und Rollback dokumentiert.
+- [ ] Reale temporäre Testinstallation nach gesonderter Betreiberfreigabe.
+- [ ] Unabhängiger Hostcollector, Ressourcen-/Netzwirkung und vollständiger
+  Prozessbaum-/Endnachweis; V1 kann keine positive Isolationsabnahme erzeugen.
+
+S5/S6 bleiben offen. Keine produktive Isolation, keine Agenten-/Providerstarts
+und keine Änderung des bestehenden Engine-Codes oder normativer S1/S2-Verträge.
+
+Lokaler S6-C-Nachweis: 62 neue reine/synthetische Tests plus 456 bestehende Tests
+bestanden (518/518, keine Skips). systemd-255-Vorlage statisch erfolgreich
+geprüft, keine Unit installiert/gestartet. Keine praktische OS-Abnahme.
+
 ## v0.4+ – Bewertung erweitern, Anzeigen und Integration
 
 ### S7 – Optionale unabhängige LLM-Jury
