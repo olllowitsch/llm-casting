@@ -525,4 +525,29 @@ create-plan liefert kanonisches JSON auf stdout. validate-plan, initial-result
 und validate-result sowie optionale --output-/--emit-json-/Hashpin-Argumente
 sind in [S2_PLANNING.md](docs/S2_PLANNING.md) beschrieben. Alle Dateien in
 tests/fixtures/planning sind synthetische Vertrags-/Serialisierungsbeispiele,
-keine echten Benchmarkresultate. S3 bleibt der nächste offene Schritt.
+keine echten Benchmarkresultate. Die anschließende S3-Speicherschicht ist unten beschrieben.
+
+
+## S3: Lokale Workspaces und Artefaktarchive
+
+`workspaces.py` ergänzt die unabhängige v0.3-Kernplanung um private, getrennte
+Input-/Outputräume, unveränderliche Artefaktkopien, hashgebundene Journale und
+einen exklusiven Writer-Lock. Keine Modell- oder Agentenausführung. Ein eigener
+Workspace ist keine Sandbox; die Ausführung bleibt ausdrücklich gesperrt.
+
+```sh
+python3 workspaces.py isolation-check
+python3 workspaces.py prepare --help
+python3 workspaces.py inspect --help
+python3 workspaces.py collect --help
+python3 -m unittest discover -s tests -p test_workspaces.py -v
+```
+
+Vollständiges netzwerkfreies Beispiel, Python-API, Journal-/Manifestformat,
+Speicherlimits, Hashpins und sichere Resume-Grenzen:
+[docs/S3_WORKSPACES.md](docs/S3_WORKSPACES.md). prepare/inspect/validate/collect
+verwenden einen expliziten privaten Root (z. B. casting-root) und den gepinnten
+S2-Plan. inspect/validate benötigen kein Ollama und ändern keine Belege.
+Ungewisse Übernahmen werden nicht automatisch wiederholt. Der Standard-
+Beispielroot casting-root und lokale Konfigurationen bleiben von Git ausgeschlossen.
+Die bisherigen Benchmark-, Resume-, Report- und Dashboard-Aufrufe bleiben erhalten.

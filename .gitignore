@@ -37,3 +37,6 @@ secrets.*
 
 # Generated offline HTML reports
 /reports/
+
+# Private S3 workspaces, input snapshots, journals and artifacts
+/casting-root/

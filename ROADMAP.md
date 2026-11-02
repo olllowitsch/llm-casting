@@ -1,8 +1,8 @@
 # LLM Casting Show – verbindliche Roadmap v0.3+
 
-Status: S1 und S2 implementiert und lokal geprüft; für S2 stehen unabhängige
-MCP-Prüfung und Commit-Freigabe aus. Laufkoordination, Ausführung und Bewertung
-sind weiterhin geplant.
+Status: S1, S2 und die lokale S3-Speicherschicht implementiert und lokal geprüft.
+Für S3 stehen unabhängige MCP-Prüfung und Commit-Freigabe aus. Laufkoordination,
+Ausführung, tatsächliche OS-Isolation und Bewertung sind weiterhin geplant.
 Keine Versionsnummer hier behauptet einen veröffentlichten Git-Tag.
 
 Verträge: [Architektur](docs/ARCHITECTURE.md),
@@ -81,22 +81,33 @@ Lokaler Nachweis: 49 neue S1-Tests und alle 61 bisherigen Tests bestanden
 Lokaler Nachweis: 55 unabhängige S2-Tests plus alle 110 bisherigen Tests bestanden
 (165/165, keine Skips). Dokumentation: [S2_PLANNING.md](docs/S2_PLANNING.md).
 Alle bestehenden Vertragsbeispiele bleiben gültig; keine Modell-/Agenten-/Cloud-
-oder Datenbankaufrufe. Workspace-/Artefaktübernahme, Isolation und Journal bleiben
-in S3 ausdrücklich offen.
+oder Datenbankaufrufe. Workspace-/Artefaktübernahme und Journal wurden anschließend in S3 ergänzt;
+echte Ausführungsisolation bleibt eine gesperrte spätere Voraussetzung.
 
 ### S3 – Workspace, Artefaktarchiv und Isolationsgrenze
 
-- [ ] Abgeschlossen
+- [x] Abgeschlossen
 - Ziel: getrennte, überprüfbare Eingaben/Workspaces und belastbare Persistenz.
-- Komponenten: Workspace-/Artefaktdienst, Journal, Einzelwriter-Lock, atomare Writes;
-  Isolationsprofil als expliziter Ausführungsvertrag.
+- Komponenten: workspaces.py, tests/test_workspaces.py, docs/S3_WORKSPACES.md;
+  Workspace-/Artefaktdienst, hashgebundenes Journal, exklusiver Store-Lock,
+  atomare No-Replace-Publikation; passiver Isolationscheck ohne Ausführungsfreigabe.
 - Akzeptanz: eigene Räume je Lauf/Teilnehmer/Versuch; feste Inventare und Grenzen;
   sichere Unterbrechung, keine fremden Dateien, keine Secrets/Hostfreigaben.
   Reale Agenten-/Testausführung ohne nachgewiesene Isolation bleibt deaktiviert.
 - Tests: Symlink/Hardlink/Traversal, Dateiaustausch, Limits, fremde Dateien,
   Crash an Schreibgrenzen, konkurrierende Writer und Rekonstruktion.
-- Abhängigkeiten: S2. Betriebssystem-Isolation konkret wählen und prüfen;
+- Abhängigkeiten: S2. Betriebssystem-Isolation vor späterer Ausführung konkret wählen und prüfen;
   Workspace-Trennung allein gilt ausdrücklich nicht als Sandbox.
+
+Lokaler Nachweis: 78 eigenständige synthetische S3-Tests plus alle 165 bisherigen
+Tests (243/243, keine Skips). API, Layout, Journal-/Manifestformat, Limits,
+Fehler-/Resume-Grenzen und CLI: [S3_WORKSPACES.md](docs/S3_WORKSPACES.md).
+S3 umfasst die lokale Speicherschicht und ein explizit gesperrtes Isolationsprofil:
+kein Prozessstart, keine Ausführungsergebnisse und kein automatischer Retry.
+Geprüfte prepared/archived-Zustände sind idempotent lesbar; unsichere Absichten
+bleiben nach Neustart gesperrt. Tatsächliche Sandbox-, Prozessbaum- und harte
+Ressourcenkontrolle sind nicht implementiert und vor Coding-Agent-Ausführung
+zwingend nachzuweisen. Der S3-Abschluss behauptet keine solche Betriebsabnahme.
 
 ### S4 – Ollama-Adapter im neuen Kern, Legacy erhalten
 
@@ -209,7 +220,8 @@ Schritt ist weder Commit- noch Veröffentlichungs- oder Deploymentfreigabe.
 1. Konkretes OpenCode-Protokoll, Versionierung, Abbruch-/Resume-Evidenz und
    Trennung seiner Provider-/Toolkonfiguration (S6).
 2. Konkreter nachweisbarer Isolationsmodus und betrieblich passende harte Limits
-   für Coding-Agenten und Testausführung (S3, Ausführung sonst deaktiviert).
+   für Coding-Agenten und Testausführung (S3-Profil dokumentiert; Nachweis vor S6,
+   Ausführung bis dahin deaktiviert).
 3. Fachliche Rubrics, Testpakete, eventuell Notenschwellen und Disziplinregister
    jenseits Performance (S1/S5).
 4. Jury-/Cloudprovider, Identitätsnachweise, Datenfreigabe und Budgetierung

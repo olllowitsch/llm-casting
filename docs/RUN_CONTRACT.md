@@ -153,7 +153,8 @@ Die Zahl terminaler Messplätze wird von der Zahl gestarteter Anläufe getrennt.
 
 ## Workspace und sicherer Abbruch
 
-Logische Struktur des neuen Archivs, noch keine existierenden Verzeichnisse:
+Ursprüngliche logische Struktur des neuen Archivs; das implementierte getrennte
+S3-Speicherlayout ist in [S3_WORKSPACES.md](S3_WORKSPACES.md) verbindlich beschrieben:
 
 ```text
 RUN_ID/
@@ -225,3 +226,11 @@ Scheduler, Prozessabbruch oder Resume-Worker wurde vorgezogen. Eine neue attempt
 ist nur eine Identität, keine Start-/Retry-Freigabe. Bekannte Plan-IDs müssen gegen
 separat gespeicherte vertrauenswürdige Hashpins oder previous verglichen werden.
 Eine globale Historie entsteht erst im späteren Archiv-/Integrationspfad.
+
+
+S3 ergänzt die getrennte Workspace-/Artefakt-/Journalpersistenz ohne Änderung der
+S2-Planfelder oder Statusbedeutungen. Workspace-Zustände sind Speicherzustände,
+keine Execution-Belege. S3 startet keine Prozesse und kann keinen Stillstand
+bestätigen; uncertain wird nicht automatisch wiederholt. Das initiale Result im
+privaten Bundle bleibt geplant. Ausführung und laufende Resultprojektion folgen
+in S4; reale Coding-Isolation bleibt vor einem Agentenstart zwingend.

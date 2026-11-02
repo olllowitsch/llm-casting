@@ -1,7 +1,8 @@
 # LLM Casting Show – Architektur v0.3+
 
 Status: verbindlicher Zielvertrag; S1-Definitionsvalidatoren und reine S2-Plan-/
-Ergebnisvalidierung sind implementiert ([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md)).
+Ergebnisvalidierung sowie lokale Workspace-/Artefaktpersistenz sind implementiert
+([S1](S1_VALIDATION.md), [S2](S2_PLANNING.md), [S3](S3_WORKSPACES.md)).
 Ausführungsengine und Bewertung sind noch geplant. Die Freigabe dieses Entwurfs ist keine Ausführungs- oder
 Veröffentlichungsfreigabe. Umsetzung in [ROADMAP.md](../ROADMAP.md).
 
@@ -141,3 +142,22 @@ Offen sind die konkrete OpenCode-Anbindung, Isolationsimplementierung,
 Cloud-/Juryprovider, fachliche Rubrics/Notengrenzen und der dicomat-Transport.
 Diese Details dürfen die festgelegte Unabhängigkeit, gemeinsame Promptversion,
 Unveränderlichkeit und Sicherheitsgrenzen nicht aufweichen.
+
+
+## Implementierte S3-Speichergrenze
+
+workspaces.py verwaltet getrennte workspaces/artifacts/journals unter einem
+privaten, explizit konfigurierten Casting-Root. S1/S2-Validierung, Canonical-JSON,
+Hashbindungen und No-Replace-Publikation werden wiederverwendet. Bestehende
+Performance-Archive und deren Runner-/Report-/Dashboardquellen bleiben unverändert.
+Details und das konkrete Layout ersetzen die frühere logische Verzeichnisskizze:
+[S3_WORKSPACES.md](S3_WORKSPACES.md).
+
+Die Schicht persistiert Absichten, prüft eigene Inputs und unabhängige Artefaktkopien
+und rekonstruiert unterbrochene Speicheroperationen. Sie erstellt keine Execution-
+Belege oder Noten. active ist ohne echten Executor gesperrt, archived bestätigt
+nur Speicherübernahme. Journale und Archive sind privat; externe Plan-/Headpins
+und sichere Dateisystemrechte bilden die Vertrauensbasis. Getrennte Verzeichnisse
+und SHA256 sind keine Sandbox oder Signatur. Die passive Isolationsprüfung meldet
+immer executable=false; tatsächliche OS-Isolation/Prozesskontrolle bleibt vor
+Coding-Agenten verpflichtend und noch unimplementiert.

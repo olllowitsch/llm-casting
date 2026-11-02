@@ -253,8 +253,10 @@ Integer-Vektoren sind für spätere TypeScript-Implementierungen bestimmt: norma
 JS-Number-Verarbeitung und UTF-16-Schlüsselsortierung reichen nicht allgemein.
 Kein Vektor ist eine echte Benchmarkmessung oder ein Ausführungsnachweis.
 
-S3 bleibt offen: sichere Workspace-/Input-/Artefaktübernahme, Journal/Lock und
-Isolationsnachweis. S2 stellt nur Datenverträge, Identitäten und Einzeldatei-Export
+Zum Abschluss von S2 blieb S3 offen: sichere Workspace-/Input-/Artefaktübernahme,
+Journal/Lock und Isolationsnachweis. Die inzwischen implementierte lokale
+Speicherschicht und die weiterhin gesperrte Ausführungsgrenze sind in
+[S3_WORKSPACES.md](S3_WORKSPACES.md) beschrieben. S2 stellt nur Datenverträge, Identitäten und Einzeldatei-Export
 bereit. Ausführungsadapter, echte Hardware-/Prozessnachweise, Bewertung und WebUI
 bleiben spätere gesonderte Schritte. Alte APIs und v0.2.0-Dateiformate werden nicht
 umgestellt, bestehende Archive nicht migriert.
